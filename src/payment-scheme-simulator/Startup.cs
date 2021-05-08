@@ -20,7 +20,7 @@ namespace payment_scheme_simulator
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
+            services.AddSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
             services.AddTransient<IEventPublisher, EventPublisher>();
         }
 

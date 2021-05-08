@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -8,18 +9,18 @@ namespace infrastructure.EventStore
 {
     public class EventSubscription<T> : IEventSubscription<T> where T : IEvent
     {
-        private readonly IEventStoreClientFactory _eventStoreClientFactory;
+        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
 
-        public EventSubscription(IEventStoreClientFactory eventStoreClientFactory)
+        public EventSubscription(IEventStoreConnectionFactory eventStoreConnectionFactory)
         {
-            _eventStoreClientFactory = eventStoreClientFactory;
+            _eventStoreConnectionFactory = eventStoreConnectionFactory;
         }
 
         public async Task SubscribeToStream(string streamName, Action<T, EventMetadata> handleEventAppeared)
         {
-            var client = _eventStoreClientFactory.CreateClient();
+            var connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
 
-            await client.SubscribeToStreamAsync(streamName, async (subscription, @event, cancelationToken) =>
+            await connection.SubscribeToStreamAsync(streamName, true, (subscription, @event) =>
             {
                 var eventData = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
                 handleEventAppeared(eventData, new EventMetadata
@@ -28,6 +29,7 @@ namespace infrastructure.EventStore
                     EventId = @event.Event.EventId,
                     EventNumber = @event.Event.EventNumber
                 });
+                return Task.CompletedTask;
             });
         }
     }

@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="AJP.MediatrEndpoints" Version="1.2.0" />
     <PackageReference Include="AJP.MediatrEndpoints.Swagger" Version="1.0.0" />
-    <PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2.0" />
+    <PackageReference Include="EventStore.Client" Version="21.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
   </ItemGroup>
 

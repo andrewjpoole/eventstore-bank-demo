@@ -1,33 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using events;
-using EventStore.Client;
+using EventStore.ClientAPI;
 
 namespace infrastructure.EventStore
 {
     public class EventStreamReader<T> : IEventStreamReader<T> where T : IEvent
     {
-        private readonly IEventStoreClientFactory _eventStoreClientFactory;
+        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
 
-        public EventStreamReader(IEventStoreClientFactory eventStoreClientFactory)
+        public EventStreamReader(IEventStoreConnectionFactory eventStoreConnectionFactory)
         {
-            _eventStoreClientFactory = eventStoreClientFactory;
+            _eventStoreConnectionFactory = eventStoreConnectionFactory;
         }
 
         public async Task<IEnumerable<(T EventData, EventMetadata EventMetadata)>> ReadEventsFromStream(string streamName)
         {
-            var client = _eventStoreClientFactory.CreateClient();
+            var connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
 
-            var events = client.ReadStreamAsync(
-                Direction.Forwards,
-                streamName,
-                StreamPosition.Start, 
-                resolveLinkTos: true);
+            var readEvents = await connection.ReadStreamEventsForwardAsync(
+                streamName, StreamPosition.Start, 1000, true);
 
             var results = new List<(T EventData, EventMetadata EventMetadata)>();
-            await foreach (var @event in events)
+            foreach (var @event in readEvents.Events)
             {
                 var eventData = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
                 var eventMetadata = new EventMetadata
@@ -38,7 +36,7 @@ namespace infrastructure.EventStore
                 };
                 results.Add((eventData, eventMetadata));
             }
-
+            
             return results;
         }
     }

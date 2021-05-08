@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using events;
 using events.Sanctions;
-using EventStore.Client;
+using EventStore.ClientAPI;
 using infrastructure.EventStore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,12 +17,14 @@ namespace sanctions_api.Services
     {
         private readonly ILogger<SanctionsCatchupHostedService> _logger;
         private readonly ICatchupSubscription _catchupSubscription;
+        private readonly CatchUpSubscriptionSettings _catchUpSubscriptionSettings;
         private readonly List<string> _sanctionedNames = new();
 
         public SanctionsCatchupHostedService(ILogger<SanctionsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription)
         {
             _logger = logger;
             _catchupSubscription = catchupCatchupSubscription;
+            _catchUpSubscriptionSettings = CatchUpSubscriptionSettings.Default;
         }
 
         public List<string> GetSanctionedNames()
@@ -32,9 +34,10 @@ namespace sanctions_api.Services
 
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            return _catchupSubscription.StartAsync(SubscriptionNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken,
+            return _catchupSubscription.StartAsync(SubscriptionNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken, _catchUpSubscriptionSettings,
                 (subscription, @event, json, ct) =>
                 {
+                    _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType}");
                     return @event.Event.EventType switch
                     {
                         nameof(SanctionedNameAdded_V1) => HandleSanctionedNameAdded(@event, json),

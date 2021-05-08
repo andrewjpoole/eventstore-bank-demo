@@ -12,11 +12,11 @@ namespace eventstore_seeder
     {
         static async Task Main(string[] args)
         {
-            //var seeder = new Seeder();
-            //await seeder.SeedInitialManagedAccounts();
+            var seeder = new Seeder();
+            await seeder.SeedInitialManagedAccounts();
 
-            var reader = new Reader();
-            reader.ReadAccountOpenedStream();
+            //var reader = new Reader();
+            //reader.ReadAccountOpenedStream();
         }
     }
 
@@ -27,7 +27,7 @@ namespace eventstore_seeder
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
-            var reader = new EventStreamReader<AccountOpenedEvent_v1>(new EventStoreClientFactory(config));
+            var reader = new EventStreamReader<AccountOpenedEvent_v1>(new EventStoreConnectionFactory(config));
             var results = reader.ReadEventsFromStream("$et-AccountOpenedEvent_v1").Result;
 
             foreach (var accountOpenedEvent in results)
@@ -74,7 +74,7 @@ namespace eventstore_seeder
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var publisher = new EventPublisher(new EventStoreClientFactory(config));
+            var publisher = new EventPublisher(new EventStoreConnectionFactory(config));
 
             foreach (var name in Names)
             {

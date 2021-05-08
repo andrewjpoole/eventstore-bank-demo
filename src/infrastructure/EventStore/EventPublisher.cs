@@ -3,18 +3,17 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using events;
-using events.Accounts;
-using EventStore.Client;
+using EventStore.ClientAPI;
 
 namespace infrastructure.EventStore
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly IEventStoreClientFactory _eventStoreClientFactory;
+        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
 
-        public EventPublisher(IEventStoreClientFactory eventStoreClientFactory)
+        public EventPublisher(IEventStoreConnectionFactory eventStoreConnectionFactory)
         {
-            _eventStoreClientFactory = eventStoreClientFactory;
+            _eventStoreConnectionFactory = eventStoreConnectionFactory;
         }
 
         public async Task<bool> Publish<T>(T data, string streamName, CancellationToken cancellationToken)
@@ -22,23 +21,18 @@ namespace infrastructure.EventStore
             _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
 
             var metaData = data is IEvent @event ? new {Version = @event.Version()} : null;
-
-            var eventData = new EventData(
-                Uuid.NewUuid(),
-                typeof(T).Name,
-                JsonSerializer.SerializeToUtf8Bytes(data),
-                JsonSerializer.SerializeToUtf8Bytes(metaData)
+            
+            var connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
+            
+            var eventPayload = new EventData(
+                eventId: Guid.NewGuid(),
+                type: typeof(T).Name,
+                isJson: true,
+                data: JsonSerializer.SerializeToUtf8Bytes(data),
+                metadata: JsonSerializer.SerializeToUtf8Bytes(metaData)
             );
-
-            var client = _eventStoreClientFactory.CreateClient();
-
-            await client.AppendToStreamAsync(
-                streamName,
-                StreamState.Any,
-                new[] { eventData },
-                cancellationToken: cancellationToken
-            );
-
+            var result = await connection.AppendToStreamAsync(streamName, ExpectedVersion.Any, eventPayload);
+            
             return true;
         }
     }

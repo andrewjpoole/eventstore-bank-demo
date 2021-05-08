@@ -23,7 +23,7 @@ namespace sanctions_api
         {
             services.AddMediatrEndpoints(typeof(Startup));
             services.AddLogging();
-            services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
+            services.AddSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
             services.AddTransient<IEventPublisher, EventPublisher>();
             //services.AddSingleton<ISanctionedNamesSubscriptionHostedService, SanctionedNamesSubscriptionHostedService>();
             //services.AddHostedService(sp => (SanctionedNamesSubscriptionHostedService)sp.GetService<ISanctionedNamesSubscriptionHostedService>());
