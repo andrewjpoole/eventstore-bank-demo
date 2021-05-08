@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "payment-scheme-simulator", "payment-scheme-simulator\payment-scheme-simulator.csproj", "{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "events", "events\events.csproj", "{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "infrastructure", "infrastructure\infrastructure.csproj", "{ED7A1287-DE2E-48E9-9439-8F471A0490CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "accounts-api", "accounts-api\accounts-api.csproj", "{4346BC4D-22FC-46ED-A263-CA6C044D8022}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventstore-seeder", "eventstore-seeder\eventstore-seeder.csproj", "{B36E8979-F3CA-4DE5-A0D2-312860540EA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sanctions-api", "sanctions-api\sanctions-api.csproj", "{0DEA4499-9B4F-4583-AC66-C2494990135A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED7A1287-DE2E-48E9-9439-8F471A0490CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED7A1287-DE2E-48E9-9439-8F471A0490CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED7A1287-DE2E-48E9-9439-8F471A0490CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED7A1287-DE2E-48E9-9439-8F471A0490CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4346BC4D-22FC-46ED-A263-CA6C044D8022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4346BC4D-22FC-46ED-A263-CA6C044D8022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4346BC4D-22FC-46ED-A263-CA6C044D8022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4346BC4D-22FC-46ED-A263-CA6C044D8022}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B36E8979-F3CA-4DE5-A0D2-312860540EA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B36E8979-F3CA-4DE5-A0D2-312860540EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B36E8979-F3CA-4DE5-A0D2-312860540EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B36E8979-F3CA-4DE5-A0D2-312860540EA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A69A4EF-F15F-4CB1-84E1-F2DEA00304CB}
+	EndGlobalSection
+EndGlobal
