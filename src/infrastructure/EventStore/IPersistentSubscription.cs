@@ -7,6 +7,12 @@ namespace infrastructure.EventStore
 {
     public interface IPersistentSubscription
     {
-        Task StartAsync(string streamName, string subscriptionFriendlyName, CancellationToken cancelationToken, Func<EventStorePersistentSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
+        Task StartAsync(
+            string streamName,
+            string groupName,
+            string subscriptionFriendlyName,
+            CancellationToken cancelationToken,
+            PersistentSubscriptionSettings persistentSubscriptionSettings,
+            Func<EventStorePersistentSubscriptionBase, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
     }
 }

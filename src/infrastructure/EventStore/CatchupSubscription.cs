@@ -41,7 +41,7 @@ namespace infrastructure.EventStore
             _catchupSubscriptionSettings = catchupSubscriptionSettings;
             _handleEventAppeared = handleEventAppeared ?? throw new ArgumentNullException(nameof(handleEventAppeared));
 
-            _logger.LogInformation($"CatchupSubscription named {_subscriptionFriendlyName} is starting...");
+            _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} is starting...");
 
             _cancellationToken = cancelationToken;
             _connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
@@ -52,23 +52,23 @@ namespace infrastructure.EventStore
         
         private void Subscribe()
         {
-            _logger.LogInformation($"Subscribing to {_streamName} for {_subscriptionFriendlyName}...");
+            _logger.LogDebug($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
 
             _subscription = _connection.SubscribeToStreamFrom (_streamName, _checkpoint, _catchupSubscriptionSettings, EventAppeared, LiveProcessingStarted, SubscriptionDropped);
 
-            _logger.LogInformation($"Subscribed to {_streamName} for {_subscriptionFriendlyName}");
+            _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }
 
         private void LiveProcessingStarted(EventStoreCatchUpSubscription obj)
         {
-            _logger.LogInformation($"{_subscriptionFriendlyName} has caught up and is now processing new events as they arrive");
+            _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} caught up and is now processing new events as they arrive");
         }
 
         private Task EventAppeared(EventStoreCatchUpSubscription subscription, ResolvedEvent @event)
         {
             if (_cancellationToken.IsCancellationRequested)
             {
-                _logger.LogInformation($"Cancellation requested for {_subscriptionFriendlyName}, disposing of subscription...");
+                _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} Cancellation requested, stopping subscription...");
                 subscription.Stop();
                 return Task.FromCanceled(_cancellationToken);
             }
@@ -80,7 +80,7 @@ namespace infrastructure.EventStore
 
         private void SubscriptionDropped(EventStoreCatchUpSubscription subsctipion, SubscriptionDropReason reason, Exception ex)
         {
-            _logger.LogWarning($"Subscription named {_subscriptionFriendlyName} to {SubscriptionNames.Sanctions.GlobalSanctionedNames} dropped for reason: {reason} with exception {ex}");
+            _logger.LogWarning($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscription dropped for reason: {reason} with exception {ex}");
 
             if (reason != SubscriptionDropReason.ConnectionClosed)
             {
