@@ -52,7 +52,8 @@ namespace sanctions_api
                 endpoints.MapGroupOfEndpointsForAPath("/sanctions", "Sanctions")
                     .WithPost<AddSanctionedNameRequest, SanctionedNameChangeResponse>("add")
                     .WithPost<RemoveSanctionedNameRequest, SanctionedNameChangeResponse>("remove")
-                    .WithGet<GetCurrentSanctionedNamesRequest, CurrentSanctionedNamesResponse>("");
+                    .WithGet<GetCurrentSanctionedNamesRequest, CurrentSanctionedNamesResponse>("")
+                    .WithPost<CheckNameRequest, CheckNameResponse>("check-name");
             });
         }
     }
