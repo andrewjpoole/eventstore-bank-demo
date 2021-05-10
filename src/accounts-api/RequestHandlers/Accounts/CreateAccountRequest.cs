@@ -7,9 +7,9 @@ namespace accounts_api.RequestHandlers.Accounts
 {
     public class CreateAccountRequest : IRequest<CreateAccountResponse>
     {
-        public string SortCode { get; set; }
-        public string AccountNumber { get; set; }
-        public decimal Balance { get; set; }
+        public string SortCode { get; init; }
+        public string AccountNumber { get; init; }
+        public decimal Balance { get; init; }
     }
     
     public class CreateAccountResponse : AccountDetails
@@ -35,7 +35,7 @@ namespace accounts_api.RequestHandlers.Accounts
         
         public Task<CreateAccountResponse> Handle(CreateAccountRequest request, CancellationToken cancellationToken)
         {
-            var newAccount = _accountRepository.Create(new AccountDetails()
+            var newAccount = _accountRepository.Create(new AccountDetails
             {
                 SortCode = request.SortCode,
                 AccountNumber = request.AccountNumber,

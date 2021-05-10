@@ -11,7 +11,10 @@ using accounts_api.RequestHandlers.Accounts;
 using accounts_api.Services;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
+using AJP.MediatrEndpoints.Swagger;
+using infrastructure.EventStore;
 using infrastructure.StatisticsGatherer;
+using Microsoft.OpenApi.Models;
 
 namespace accounts_api
 {
@@ -21,6 +24,21 @@ namespace accounts_api
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(); // only needed for swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Sanctions Api",
+                    Version = "v1",
+                    Description = "Api for adding, modifying, and listing accounts and transactions, backed by immutable streams in eventstore"
+                });
+
+                c.DocumentFilter<AddEndpointsDocumentFilter>();
+            });
+
+            services.AddMediatrEndpointsSwagger();
+
             services.AddMediatrEndpoints(typeof(Startup));
 
             services.AddLogging();
@@ -28,7 +46,9 @@ namespace accounts_api
             services.AddSingleton<IStatisticsTaskQueue, StatisticsTaskQueue>();
             services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
             services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());
-            services.AddSingleton<IAccountRepository, AccountRepository>();
+            services.AddTransient<ICatchupSubscription, CatchupSubscription>();
+            services.AddSingleton<IAccountsCatchupHostedService, AccountsCatchupHostedService>();
+            services.AddSingleton<IAccountTransactionsCatchupHostedService, AccountTransactionsCatchupHostedService>();
             services.AddScoped<IEndpointContextAccessor, EndpointContextAccessor>();
         }
 
@@ -39,6 +59,12 @@ namespace accounts_api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sanctions API V1");
+            });
 
             app.UseRouting();
 
@@ -53,7 +79,6 @@ namespace accounts_api
                     .WithGet<GetAccountsRequest, IEnumerable<AccountDetails>>("/", "Gets Accounts with various filter options")
                     .WithGet<GetAccountByIdRequest, AccountDetails>("/{Id}", "Get a single account by Id")
                     .WithPost<CreateAccountRequest, CreateAccountResponse>("/", "Create a new account", StatusCodes.Status201Created)
-                    .WithDelete<DeleteAccountByIdRequest, AccountDeletedResponse>("/{Id}", "Delete an account by Id", StatusCodes.Status204NoContent)
                     .WithPut<UpdateAccountStatusRequest, AccountDetails>("/{Id}");
 
                 endpoints.MapGet("/Stats", async context =>

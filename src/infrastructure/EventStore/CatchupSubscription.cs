@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using events;
-using EventStore.ClientAPI;
+using EventStore.Client;
 using Microsoft.Extensions.Logging;
 
 namespace infrastructure.EventStore
@@ -12,64 +12,60 @@ namespace infrastructure.EventStore
     public class CatchupSubscription : ICatchupSubscription
     {
         private readonly ILogger<CatchupSubscription> _logger;
-        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
-        private EventStoreCatchUpSubscription _subscription;
-        private IEventStoreConnection _connection;
-        private long _checkpoint;
+        private readonly IEventStoreClientFactory _eventStoreClientFactory;
+        private StreamSubscription _subscription;
+        private StreamPosition _checkpoint;
         private CancellationToken _cancellationToken;
 
-        private Func<EventStoreCatchUpSubscription, ResolvedEvent, string, CancellationToken, Task> _handleEventAppeared;
+        private Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> _handleEventAppeared;
         private string _streamName;
         private string _subscriptionFriendlyName;
-        private CatchUpSubscriptionSettings _catchupSubscriptionSettings;
+        private EventStoreClient _client;
 
-        public CatchupSubscription(ILogger<CatchupSubscription> logger, IEventStoreConnectionFactory eventStoreConnectionFactory)
+        public CatchupSubscription(ILogger<CatchupSubscription> logger, IEventStoreClientFactory eventStoreClientFactory)
         {
             _logger = logger;
-            _eventStoreConnectionFactory = eventStoreConnectionFactory;
+            _eventStoreClientFactory = eventStoreClientFactory;
         }
         
         public async Task StartAsync(
             string streamName, 
             string subscriptionFriendlyName, 
             CancellationToken cancelationToken, 
-            CatchUpSubscriptionSettings catchupSubscriptionSettings, 
-            Func<EventStoreCatchUpSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
+            Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
         {
             _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(_streamName)) : streamName;
             _subscriptionFriendlyName = string.IsNullOrEmpty(subscriptionFriendlyName) ? throw new ArgumentNullException(nameof(subscriptionFriendlyName)) : subscriptionFriendlyName;
-            _catchupSubscriptionSettings = catchupSubscriptionSettings;
             _handleEventAppeared = handleEventAppeared ?? throw new ArgumentNullException(nameof(handleEventAppeared));
 
             _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} is starting...");
 
             _cancellationToken = cancelationToken;
-            _connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
+            _client = _eventStoreClientFactory.CreateClient();
 
             _checkpoint = StreamPosition.Start;
-            Subscribe();
+            await Subscribe();
         }
         
-        private void Subscribe()
+        private async Task Subscribe()
         {
-            _logger.LogDebug($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
+            _logger.LogDebug($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
+            
+            _subscription = await _client.SubscribeToStreamAsync(_streamName, EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
 
-            _subscription = _connection.SubscribeToStreamFrom (_streamName, _checkpoint, _catchupSubscriptionSettings, EventAppeared, LiveProcessingStarted, SubscriptionDropped);
+            var settings = EventStoreClientSettings.Create("");
+            var psclient = new EventStorePersistentSubscriptionsClient(settings);
+            psclient.SubscribeAsync()
 
             _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }
 
-        private void LiveProcessingStarted(EventStoreCatchUpSubscription obj)
-        {
-            _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} caught up and is now processing new events as they arrive");
-        }
-
-        private Task EventAppeared(EventStoreCatchUpSubscription subscription, ResolvedEvent @event)
+        private Task EventAppeared(StreamSubscription subscription, ResolvedEvent @event, CancellationToken cancellationToken)
         {
             if (_cancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} Cancellation requested, stopping subscription...");
-                subscription.Stop();
+                subscription.Dispose();
                 return Task.FromCanceled(_cancellationToken);
             }
 
@@ -77,15 +73,15 @@ namespace infrastructure.EventStore
 
             return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), _cancellationToken);
         }
-
-        private void SubscriptionDropped(EventStoreCatchUpSubscription subsctipion, SubscriptionDropReason reason, Exception ex)
+        
+        private void SubscriptionDropped(StreamSubscription subscription, SubscriptionDroppedReason reason, Exception ex)
         {
             _logger.LogWarning($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscription dropped for reason: {reason} with exception {ex}");
 
-            if (reason != SubscriptionDropReason.ConnectionClosed)
+            if (reason != SubscriptionDroppedReason.Disposed)
             {
                 // Resubscribe if the client didn't stop the subscription
-                Subscribe();
+                _=Subscribe();
             }
         }
     }

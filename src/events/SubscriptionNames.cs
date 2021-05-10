@@ -11,6 +11,8 @@ namespace events
         public class Accounts
         {
             public static string AccountOpened(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Details";
+
+            public const string AllAccountsOpened = "$et-AccountOpenedEvent_v1";
             public static string AccountTransactions(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Transactions";
             public static string AccountBalanceLedger(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-BalanceLedger";
         }

@@ -39,13 +39,11 @@ namespace accounts_api.RequestHandlers.Accounts
         {
             return WebUtility.UrlDecode(request.BalanceFilter) switch
             {
-                string s when s.StartsWith("<") => Task.FromResult(
-                    _accountRepository.GetAll(request.SortCodeMatch,
-                        balance => balance < decimal.Parse(s.Remove(0, 1)), request.AccountStatusFilter)),
-                string s when s.StartsWith(">") => Task.FromResult(
-                    _accountRepository.GetAll(request.SortCodeMatch,
-                        balance => balance > decimal.Parse(s.Remove(0, 1)), request.AccountStatusFilter)),
-                _ => Task.FromResult(_accountRepository.GetAll(request.SortCodeMatch, null, request.AccountStatusFilter))
+                string s when s.StartsWith("<") => _accountRepository.GetAll(request.SortCodeMatch,
+                        balance => balance < decimal.Parse(s.Remove(0, 1)), request.AccountStatusFilter),
+                string s when s.StartsWith(">") => _accountRepository.GetAll(request.SortCodeMatch,
+                        balance => balance > decimal.Parse(s.Remove(0, 1)), request.AccountStatusFilter),
+                _ => _accountRepository.GetAll(request.SortCodeMatch, null, request.AccountStatusFilter)
             };
         }
     }

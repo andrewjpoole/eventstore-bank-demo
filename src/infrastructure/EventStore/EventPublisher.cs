@@ -3,17 +3,17 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using events;
-using EventStore.ClientAPI;
+using EventStore.Client;
 
 namespace infrastructure.EventStore
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
+        private readonly IEventStoreClientFactory _eventStoreClientFactory;
 
-        public EventPublisher(IEventStoreConnectionFactory eventStoreConnectionFactory)
+        public EventPublisher(IEventStoreClientFactory eventStoreClientFactory)
         {
-            _eventStoreConnectionFactory = eventStoreConnectionFactory;
+            _eventStoreClientFactory = eventStoreClientFactory;
         }
 
         public async Task<bool> Publish<T>(T data, string streamName, CancellationToken cancellationToken)
@@ -21,17 +21,16 @@ namespace infrastructure.EventStore
             _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
 
             var metaData = data is IEvent @event ? new {Version = @event.Version()} : null;
-            
-            var connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
+
+            var client = _eventStoreClientFactory.CreateClient();
             
             var eventPayload = new EventData(
-                eventId: Guid.NewGuid(),
+                eventId: Uuid.NewUuid(),
                 type: typeof(T).Name,
-                isJson: true,
                 data: JsonSerializer.SerializeToUtf8Bytes(data),
                 metadata: JsonSerializer.SerializeToUtf8Bytes(metaData)
             );
-            var result = await connection.AppendToStreamAsync(streamName, ExpectedVersion.Any, eventPayload);
+            var result = await client.AppendToStreamAsync(streamName, StreamState.Any, new[]{eventPayload}, cancellationToken: cancellationToken);
             
             return true;
         }

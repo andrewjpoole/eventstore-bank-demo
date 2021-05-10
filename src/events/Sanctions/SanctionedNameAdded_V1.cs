@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace events.Sanctions
 {
-    public class SanctionedNameAdded_V1 : IEvent
+    public class SanctionedNameAdded_v1 : IEvent
     {
         public string SanctionedName { get; init; }
         public DateTime Added { get; init; }
@@ -15,7 +15,7 @@ namespace events.Sanctions
         public int  Version() => 1;
     }
 
-    public class SanctionedNameRemoved_V1 : IEvent
+    public class SanctionedNameRemoved_v1 : IEvent
     {
         public string SanctionedName { get; init; }
         public DateTime Removed { get; init; }

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using events;
-using EventStore.ClientAPI;
+using EventStore.Client;
 using Microsoft.Extensions.Logging;
 
 namespace infrastructure.EventStore
@@ -12,10 +12,10 @@ namespace infrastructure.EventStore
     public class PersistentSubscription : IPersistentSubscription
     {
         private readonly ILogger<PersistentSubscription> _logger;
-        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
+        private readonly IEventStoreClientFactory _eventStoreClientFactory;
         private EventStorePersistentSubscriptionBase _subscription;
-        private IEventStoreConnection _connection;
-        private long _checkpoint;
+        private EventStoreClient _client;
+        private StreamPosition _checkpoint;
         private CancellationToken _cancellationToken;
 
         private Func<EventStorePersistentSubscriptionBase, ResolvedEvent, string, CancellationToken, Task> _handleEventAppeared;
@@ -24,10 +24,10 @@ namespace infrastructure.EventStore
         private string _subscriptionFriendlyName;
         private PersistentSubscriptionSettings _persistentSubscriptionSettings;
 
-        public PersistentSubscription(ILogger<PersistentSubscription> logger, IEventStoreConnectionFactory eventStoreConnectionFactory)
+        public PersistentSubscription(ILogger<PersistentSubscription> logger, IEventStoreClientFactory eventStoreClientFactory)
         {
             _logger = logger;
-            _eventStoreConnectionFactory = eventStoreConnectionFactory;
+            _eventStoreClientFactory = eventStoreClientFactory;
         }
 
         public async Task StartAsync(
@@ -36,7 +36,7 @@ namespace infrastructure.EventStore
             string subscriptionFriendlyName,
             CancellationToken cancelationToken,
             PersistentSubscriptionSettings persistentSubscriptionSettings,
-            Func<EventStorePersistentSubscriptionBase, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
+            Func<PersistentSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
         {
             _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
             _groupName = string.IsNullOrEmpty(groupName) ? throw new ArgumentNullException(nameof(groupName)) : streamName;
@@ -47,7 +47,7 @@ namespace infrastructure.EventStore
             _logger.LogInformation($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName}  is starting...");
 
             _cancellationToken = cancelationToken;
-            _connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
+            _client = _eventStoreClientFactory.CreateClient();
 
             _checkpoint = StreamPosition.Start;
             await Subscribe();
@@ -57,7 +57,7 @@ namespace infrastructure.EventStore
         {
             _logger.LogDebug($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
 
-            _subscription = await _connection.ConnectToPersistentSubscriptionAsync(_streamName, _groupName, EventAppeared, SubscriptionDropped);
+            _subscription = await _client. ConnectToPersistentSubscriptionAsync(_streamName, _groupName, EventAppeared, SubscriptionDropped);
 
             _logger.LogInformation($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }
@@ -76,11 +76,11 @@ namespace infrastructure.EventStore
             return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), _cancellationToken);
         }
         
-        private void SubscriptionDropped(EventStorePersistentSubscriptionBase subscription, SubscriptionDropReason reason, Exception ex)
+        private void SubscriptionDropped(EventStorePersistentSubscriptionBase subscription, SubscriptionDroppedReason reason, Exception ex)
         {
             _logger.LogWarning($"{nameof(PersistentSubscription)}:{_subscriptionFriendlyName} subscription dropped for reason: {reason} with exception {ex}");
 
-            if (reason != SubscriptionDropReason.ConnectionClosed)
+            if (reason != SubscriptionDroppedReason.Disposed)
             {
                 // Resubscribe if the client didn't stop the subscription
                 _ = Subscribe();

@@ -10,8 +10,8 @@ namespace accounts_api.RequestHandlers.Accounts
     public class UpdateAccountStatusRequest : IRequest<AccountDetails>
     {
         [SwaggerRouteParameter]
-        public string Id { get; set; }
-        public bool Blocked { get; set; }
+        public string Id { get; init; }
+        public AccountStatus Status { get; init; }
     }
     
     public class UpdateAccountStatusRequestHandler : IRequestHandler<UpdateAccountStatusRequest, AccountDetails>
@@ -30,11 +30,7 @@ namespace accounts_api.RequestHandlers.Accounts
             if (account == null)
                 throw new NotFoundHttpException($"account with id:{request.Id} not found", "resource not found");
             
-            return request.Blocked switch
-            {
-                true => Task.FromResult(_accountRepository.Block(account.Id)),
-                false => Task.FromResult(_accountRepository.UnBlock(account.Id))
-            };
+            return Task.FromResult(_accountRepository.ChangeStatus(account.Id, request.Status));
         }
     }
 }

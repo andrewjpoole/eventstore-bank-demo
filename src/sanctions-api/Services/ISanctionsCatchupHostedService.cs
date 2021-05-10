@@ -3,7 +3,7 @@ using infrastructure.EventStore;
 
 namespace sanctions_api.Services
 {
-    public interface ISanctionsCatchupHostedService//<T> : ICatchupSubscription<T> where T : new()
+    public interface ISanctionsCatchupHostedService
     {
         List<string> GetSanctionedNames();
     }

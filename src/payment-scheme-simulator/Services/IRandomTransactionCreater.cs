@@ -8,12 +8,12 @@ namespace payment_scheme_simulator.Services
 {
     public interface IRandomInboundPaymentReceivedGenerator
     {
-        InboundPaymentReceived_v1 Generate(string scheme, string type);
+        InboundPaymentReceived_v1 Generate(PaymentScheme scheme, PaymentType type);
     }
 
     public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceivedGenerator
     {
-        public InboundPaymentReceived_v1 Generate(string scheme, string type)
+        public InboundPaymentReceived_v1 Generate(PaymentScheme scheme, PaymentType type)
         {
             var random = new Random();
 

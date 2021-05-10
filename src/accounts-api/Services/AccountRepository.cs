@@ -11,19 +11,19 @@ namespace accounts_api.Services
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly IEventStreamReader<AccountOpenedEvent_v1> _accountOpenedReader;
+        
         private readonly Dictionary<string, AccountDetails> _accounts;
 
         public AccountRepository(IEventStreamReader<AccountOpenedEvent_v1> accountOpenedReader)
         {
-            _accountOpenedReader = accountOpenedReader;
+            
         }
         
         public AccountDetails GetById(string id) => _accounts.ContainsKey(id) ? _accounts[id] : null;
 
         public async Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, AccountStatus statusFilter = AccountStatus.Any)
         {
-            var allOpenededAccounts = await _accountOpenedReader.ReadEventsFromStream("$et-AccountOpenedEvent_v1");
+            
 
             // TODO start here
 
@@ -51,21 +51,12 @@ namespace accounts_api.Services
             return _accounts[newId];
         }
         
-        public AccountDetails Block(string id)
+        public AccountDetails ChangeStatus(string id, AccountStatus status)
         {
             if (_accounts.ContainsKey(id) == false)
                 return null;
 
-            _accounts[id].Status = AccountStatus.Blocked;
-            return _accounts[id];
-        }
-
-        public AccountDetails UnBlock(string id)
-        {
-            if (!_accounts.ContainsKey(id) == false)
-                return null;
-
-            _accounts[id].Status = AccountStatus.Unblocked;
+            _accounts[id].Status = status;
             return _accounts[id];
         }
     }
