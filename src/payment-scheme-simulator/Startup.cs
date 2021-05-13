@@ -4,12 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using events.Payments;
-using infrastructure;
 using infrastructure.EventStore;
 
 namespace payment_scheme_simulator
@@ -20,7 +16,7 @@ namespace payment_scheme_simulator
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
+            services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddTransient<IEventPublisher, EventPublisher>();
         }
 

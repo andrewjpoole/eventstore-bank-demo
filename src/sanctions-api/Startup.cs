@@ -43,7 +43,7 @@ namespace sanctions_api
 
             services.AddMediatrEndpoints(typeof(Startup));
             services.AddLogging();
-            services.AddSingleton<IEventStoreConnectionFactory, EventStoreConnectionFactory>();
+            services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddTransient<IEventPublisher, EventPublisher>();
             services.AddTransient<ICatchupSubscription, CatchupSubscription>();
             services.AddSingleton<ISanctionsCatchupHostedService, SanctionsCatchupHostedService>();

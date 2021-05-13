@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using events.Accounts;
 using infrastructure.EventStore;
-using AccountStatus = accounts_api.RequestHandlers.Accounts.AccountStatus;
 
 namespace accounts_api.Services
 {
@@ -21,9 +20,8 @@ namespace accounts_api.Services
         
         public AccountDetails GetById(string id) => _accounts.ContainsKey(id) ? _accounts[id] : null;
 
-        public async Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, AccountStatus statusFilter = AccountStatus.Any)
+        public Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, events.Accounts.AccountStatus statusFilter = events.Accounts.AccountStatus.Any)
         {
-            
 
             // TODO start here
 
@@ -38,7 +36,7 @@ namespace accounts_api.Services
             if (statusFilter != AccountStatus.Any)
                 filteredAccounts = filteredAccounts.Where(x => x.Status == statusFilter);
 
-            return filteredAccounts;
+            return Task.FromResult(filteredAccounts);
         }
 
         public AccountDetails Create(AccountDetails newAccount)

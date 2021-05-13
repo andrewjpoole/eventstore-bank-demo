@@ -1,37 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using events;
-using EventStore.ClientAPI;
+using EventStore.Client;
 
 namespace infrastructure.EventStore
 {
     public class EventStreamReader<T> : IEventStreamReader<T> where T : IEvent
     {
-        private readonly IEventStoreConnectionFactory _eventStoreConnectionFactory;
+        private readonly IEventStoreClientFactory _eventStoreClientFactory;
 
-        public EventStreamReader(IEventStoreConnectionFactory eventStoreConnectionFactory)
+        public EventStreamReader(IEventStoreClientFactory eventStoreClientFactory)
         {
-            _eventStoreConnectionFactory = eventStoreConnectionFactory;
+            _eventStoreClientFactory = eventStoreClientFactory;
         }
 
         public async Task<IEnumerable<(T EventData, EventMetadata EventMetadata)>> ReadEventsFromStream(string streamName)
         {
-            var connection = await _eventStoreConnectionFactory.CreateConnectionAsync();
+            var client = _eventStoreClientFactory.CreateClient();
 
-            var readEvents = await connection.ReadStreamEventsForwardAsync(
-                streamName, StreamPosition.Start, 1000, true);
+            var events = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start, 1000, resolveLinkTos:true);
 
             var results = new List<(T EventData, EventMetadata EventMetadata)>();
-            foreach (var @event in readEvents.Events)
+            await foreach (var @event in events)
             {
                 var eventData = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
                 var eventMetadata = new EventMetadata
                 {
                     Created = @event.Event.Created,
-                    EventId = @event.Event.EventId,
+                    EventId = @event.Event.EventId.ToGuid(),
                     EventNumber = @event.Event.EventNumber
                 };
                 results.Add((eventData, eventMetadata));

@@ -14,12 +14,12 @@ namespace sanctions_api.RequestHandlers.GetCurrentNames
             _sanctionedNamesSubscriptionHostedService = sanctionedNamesSubscriptionHostedService;
         }
 
-        public async Task<CurrentSanctionedNamesResponse> Handle(GetCurrentSanctionedNamesRequest request, CancellationToken cancellationToken)
+        public Task<CurrentSanctionedNamesResponse> Handle(GetCurrentSanctionedNamesRequest request, CancellationToken cancellationToken)
         {
-            return new CurrentSanctionedNamesResponse
+            return Task.FromResult(new CurrentSanctionedNamesResponse
             {
                 SanctionedNames = _sanctionedNamesSubscriptionHostedService.GetSanctionedNames()
-            };
+            });
         }
     }
 }

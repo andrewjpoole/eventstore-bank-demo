@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using EventStore.Client;
 
 namespace infrastructure.EventStore
 {
-    public interface IPersistentSubscription
+    public interface IPersistentSubscriptionService
     {
         Task StartAsync(
             string streamName,
@@ -12,6 +13,6 @@ namespace infrastructure.EventStore
             string subscriptionFriendlyName,
             CancellationToken cancelationToken,
             PersistentSubscriptionSettings persistentSubscriptionSettings,
-            Func<EventStorePersistentSubscriptionBase, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
+            Func<PersistentSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
     }
 }

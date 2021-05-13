@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using events;
 using EventStore.Client;
 using Microsoft.Extensions.Logging;
 
@@ -52,11 +50,7 @@ namespace infrastructure.EventStore
             _logger.LogDebug($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
             
             _subscription = await _client.SubscribeToStreamAsync(_streamName, EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
-
-            var settings = EventStoreClientSettings.Create("");
-            var psclient = new EventStorePersistentSubscriptionsClient(settings);
-            psclient.SubscribeAsync()
-
+            
             _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }
 
