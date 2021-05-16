@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace accounts_api.Services
+namespace infrastructure
 {
     public interface IEndpointContextAccessor
     {

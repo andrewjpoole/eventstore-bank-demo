@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AJP.MediatrEndpoints" Version="1.2.0" />
     <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="21.2.0" />
     <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="21.2.0" />
     <PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2.0" />

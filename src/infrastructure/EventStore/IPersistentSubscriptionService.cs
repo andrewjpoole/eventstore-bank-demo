@@ -13,6 +13,6 @@ namespace infrastructure.EventStore
             string subscriptionFriendlyName,
             CancellationToken cancelationToken,
             PersistentSubscriptionSettings persistentSubscriptionSettings,
-            Func<PersistentSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
+            Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> handleEventAppeared);
     }
 }

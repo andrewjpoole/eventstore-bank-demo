@@ -1,21 +1,17 @@
+using AJP.MediatrEndpoints;
+using AJP.MediatrEndpoints.Swagger;
+using infrastructure;
+using infrastructure.EventStore;
+using infrastructure.StatisticsGatherer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
-using accounts_api.RequestHandlers.Accounts;
-using accounts_api.Services;
-using AJP.MediatrEndpoints;
-using AJP.MediatrEndpoints.EndpointRegistration;
-using AJP.MediatrEndpoints.Swagger;
-using events.Accounts;
-using infrastructure;
-using infrastructure.EventStore;
-using infrastructure.StatisticsGatherer;
 using Microsoft.OpenApi.Models;
+using payment_scheme_domain.Services;
 
-namespace accounts_api
+namespace payment_scheme_domain
 {
     public class Startup
     {
@@ -28,9 +24,9 @@ namespace accounts_api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Accounts Api",
+                    Title = "Payment Scheme A Domain Api",
                     Version = "v1",
-                    Description = "Api for adding, modifying, and listing accounts and transactions, backed by immutable streams in eventstore"
+                    Description = "implementation of Payment Scheme A"
                 });
 
                 c.DocumentFilter<AddEndpointsDocumentFilter>();
@@ -48,11 +44,9 @@ namespace accounts_api
             services.AddTransient<ICatchupSubscription, CatchupSubscription>();
             services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddSingleton<IEventPublisher, EventPublisher>();
-            services.AddSingleton<IAccountsCatchupHostedService, AccountsCatchupHostedService>();
-            services.AddHostedService(sp => (AccountsCatchupHostedService)sp.GetService<IAccountsCatchupHostedService>());
-            //services.AddSingleton<IAccountTransactionsCatchupHostedService, AccountTransactionsCatchupHostedService>();
-            services.AddSingleton<IAccountRepository, AccountRepository>();
-            services.AddScoped<IEndpointContextAccessor, EndpointContextAccessor>();
+
+            services.AddSingleton<IPaymentReceivedHostedService, PaymentReceivedHostedService>();
+            services.AddHostedService(sp => (PaymentReceivedHostedService)sp.GetService<IPaymentReceivedHostedService>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,20 +60,19 @@ namespace accounts_api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Accounts API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Payment Scheme A API V1");
             });
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGroupOfEndpointsForAPath("/api/v1/accounts", "Accounts", "everything to do with accounts")
-                    .WithGet<GetAccountsRequest, IEnumerable<AccountSummary>>("/", "Gets Accounts with various filter options")
-                    .WithGet<GetAccountByIdRequest, AccountSummary>("/{Id}", "Get a single account by Id")
-                    .WithPost<CreateAccountRequest, CreateAccountResponse>("/", "Create a new account", StatusCodes.Status202Accepted)
-                    .WithPut<UpdateAccountStatusRequest, UpdateAccountStatusResponse>("/{Id}", "Update the status of an account", StatusCodes.Status202Accepted, 
-                        ParameterDictionaryBuilder.NewDictionary()
-                            .AddEnumParam("Status", typeof(AccountStatus), ParameterDictionaryBuilder.In.Query, true));
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello World!");
+                });
+
+                // payment scheme endpoints go here...
 
                 endpoints.MapGet("/Stats", async context =>
                 {

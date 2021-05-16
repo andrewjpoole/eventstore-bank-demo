@@ -1,13 +1,11 @@
 using System;
-using accounts_api.Services;
 using AJP.MediatrEndpoints;
-using infrastructure;
 using infrastructure.StatisticsGatherer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace accounts_api
+namespace infrastructure
 {
     public class RequestProcessors : IMediatrEndpointsProcessors
     {

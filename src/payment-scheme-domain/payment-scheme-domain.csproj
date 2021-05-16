@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>accounts_api</RootNamespace>
-    <UserSecretsId>d1359ead-de49-4f8a-a2c1-91268930d20e</UserSecretsId>
+    <RootNamespace>payment_scheme_domain</RootNamespace>
+    <UserSecretsId>13813963-6954-4a99-bb32-d957883c7c4e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
@@ -17,6 +17,10 @@
   <ItemGroup>
     <ProjectReference Include="..\events\events.csproj" />
     <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RequestHandlers\" />
   </ItemGroup>
 
 </Project>

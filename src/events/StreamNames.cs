@@ -2,6 +2,8 @@
 {
     public class StreamNames
     {
+        public static string SubscriptionGroupName(string streamName) => $"{streamName}-SubscriptionGroup";
+        
         public class Accounts
         {
             public static string AccountOpened(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Details";
@@ -14,6 +16,8 @@
 
         public class PaymentProcessing
         {
+            public const string InboundPaymentReceived = "$et-InboundPaymentReceived_v1";
+
         }
         
 

@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "accounts-api", "accounts-ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventstore-seeder", "eventstore-seeder\eventstore-seeder.csproj", "{B36E8979-F3CA-4DE5-A0D2-312860540EA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sanctions-api", "sanctions-api\sanctions-api.csproj", "{0DEA4499-9B4F-4583-AC66-C2494990135A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sanctions-api", "sanctions-api\sanctions-api.csproj", "{0DEA4499-9B4F-4583-AC66-C2494990135A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{1B7C2568-A1B3-4680-AF0A-05482ABDDB33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "payment-scheme-domain", "payment-scheme-domain\payment-scheme-domain.csproj", "{83F239A0-F91A-4C0E-89AB-D20028C78700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +47,10 @@ Global
 		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DEA4499-9B4F-4583-AC66-C2494990135A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,7 +16,7 @@ namespace infrastructure.EventStore
         private StreamPosition _checkpoint;
         private CancellationToken _cancellationToken;
 
-        private Func<PersistentSubscription, ResolvedEvent, string, CancellationToken, Task> _handleEventAppeared;
+        private Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> _handleEventAppeared;
         private string _streamName;
         private string _groupName;
         private string _subscriptionFriendlyName;
@@ -26,7 +26,7 @@ namespace infrastructure.EventStore
         public PersistentSubscriptionService(ILogger<PersistentSubscriptionService> logger, IEventStoreClientFactory eventStoreClientFactory)
         {
             _logger = logger;
-            _eventStoreClientFactory = eventStoreClientFactory; // maynot need this one?
+            _eventStoreClientFactory = eventStoreClientFactory; // may not need this one?
 
             var settings = EventStoreClientSettings.Create("");
             _persistentSubscriptionsClient = new EventStorePersistentSubscriptionsClient(settings);
@@ -38,7 +38,7 @@ namespace infrastructure.EventStore
             string subscriptionFriendlyName,
             CancellationToken cancelationToken,
             PersistentSubscriptionSettings persistentSubscriptionSettings,
-            Func<PersistentSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
+            Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> handleEventAppeared)
         {
             _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
             _groupName = string.IsNullOrEmpty(groupName) ? throw new ArgumentNullException(nameof(groupName)) : streamName;
@@ -76,7 +76,7 @@ namespace infrastructure.EventStore
 
             _checkpoint = @event.OriginalEventNumber;
 
-            return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), _cancellationToken);
+            return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), retryCount, _cancellationToken);
         }
         
         private void SubscriptionDropped(PersistentSubscription subscription, SubscriptionDroppedReason reason, Exception ex)

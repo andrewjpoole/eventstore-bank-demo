@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using infrastructure;
+using Microsoft.AspNetCore.Http;
 
 namespace accounts_api.Services
 {
