@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using events.Accounts;
@@ -10,52 +11,75 @@ namespace accounts_api.Services
 {
     public class AccountRepository : IAccountRepository
     {
+        private readonly IAccountsCatchupHostedService _accountsCatchupHostedService;
+        private readonly IEventPublisher _eventPublisher;
         
-        private readonly Dictionary<string, AccountDetails> _accounts;
-
-        public AccountRepository(IEventStreamReader<AccountOpenedEvent_v1> accountOpenedReader)
+        public AccountRepository(IAccountsCatchupHostedService accountsCatchupHostedService, IEventPublisher eventPublisher)
         {
-            
+            _accountsCatchupHostedService = accountsCatchupHostedService;
+            _eventPublisher = eventPublisher;
         }
         
-        public AccountDetails GetById(string id) => _accounts.ContainsKey(id) ? _accounts[id] : null;
+        public AccountSummary GetById(Guid id) => _accountsCatchupHostedService.Accounts.ContainsKey(id) ? _accountsCatchupHostedService.Accounts[id] : null;
 
-        public Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, events.Accounts.AccountStatus statusFilter = events.Accounts.AccountStatus.Any)
+        public async Task<IEnumerable<AccountSummary>> GetAll(string sortcode = "", AccountStatus statusFilter = AccountStatus.Any)
         {
 
             // TODO start here
 
-            var filteredAccounts = _accounts.Select(x => x.Value);
+            var filteredAccounts = _accountsCatchupHostedService.Accounts.Select(x => x.Value);
             
             if (!string.IsNullOrEmpty(sortcode))
-                filteredAccounts = filteredAccounts.Where(x => x.SortCode.StartsWith(sortcode)).ToList();
+                filteredAccounts = filteredAccounts.Where(x => x.SortCode.ToString().StartsWith(sortcode)).ToList();
 
-            if (balanceCriteria != null)
-                filteredAccounts = filteredAccounts.Where(x => balanceCriteria(x.Balance) == true).ToList();
+            //if (balanceCriteria != null)
+            //    filteredAccounts = filteredAccounts.Where(x => balanceCriteria(x.Balance) == true).ToList();
 
             if (statusFilter != AccountStatus.Any)
                 filteredAccounts = filteredAccounts.Where(x => x.Status == statusFilter);
 
-            return Task.FromResult(filteredAccounts);
+            return filteredAccounts;
         }
 
-        public AccountDetails Create(AccountDetails newAccount)
+        public async Task<bool> Create(AccountDetails newAccount)
         {
             // Add some validation here
             
-            var newId = Guid.NewGuid().ToString();
-            newAccount.Id = newId;
-            _accounts.Add(newId, newAccount);
-            return _accounts[newId];
+            // raise event to create
+            var accountOpened = new AccountOpenedEvent_v1
+            {
+                Id = Guid.NewGuid(),
+                SortCode = newAccount.SortCode,
+                AccountNumber = newAccount.AccountNumber,
+                Name = newAccount.AccountName,
+                Opened = DateTime.Now,
+                Status = AccountStatus.Opened
+            };
+
+            var success = await _eventPublisher.Publish<AccountOpenedEvent_v1>(accountOpened, accountOpened.StreamName(), CancellationToken.None);
+
+            return success;
         }
         
-        public AccountDetails ChangeStatus(string id, AccountStatus status)
+        public async Task<bool> ChangeStatus(Guid id, AccountStatus status)
         {
-            if (_accounts.ContainsKey(id) == false)
-                return null;
+            if (_accountsCatchupHostedService.Accounts.ContainsKey(id) == false)
+                return false;
 
-            _accounts[id].Status = status;
-            return _accounts[id];
+            var existingAccount = _accountsCatchupHostedService.Accounts[id];
+
+            // raise event to update status
+            var accountUpdated = new AccountStatusUpdated_v1
+            {
+                Id = existingAccount.Id,
+                SortCode = existingAccount.SortCode,
+                AccountNumber = existingAccount.AccountNumber,
+                Status = status
+            };
+
+            var success = await _eventPublisher.Publish(accountUpdated, accountUpdated.StreamName(), CancellationToken.None);
+
+            return success;
         }
     }
 }

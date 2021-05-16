@@ -32,7 +32,7 @@ namespace sanctions_api.Services
 
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            return _catchupSubscription.StartAsync(SubscriptionNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken,
+            return _catchupSubscription.StartAsync(StreamNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken,
                 (subscription, @event, json, ct) =>
                 {
                     _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType}");
@@ -51,7 +51,7 @@ namespace sanctions_api.Services
 
             if (eventData is null || string.IsNullOrEmpty(eventData.SanctionedName))
             {
-                _logger.LogWarning($"eventData is null or missing a sanctioned name to add, ignoring event {SubscriptionNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
+                _logger.LogWarning($"eventData is null or missing a sanctioned name to add, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
                 return Task.CompletedTask;
             }
 
@@ -67,7 +67,7 @@ namespace sanctions_api.Services
 
             if (eventData is null || string.IsNullOrEmpty(eventData.SanctionedName))
             {
-                _logger.LogWarning($"eventData is null or missing a sanctioned name to remove, ignoring event {SubscriptionNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
+                _logger.LogWarning($"eventData is null or missing a sanctioned name to remove, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
                 return Task.CompletedTask;
             }
 

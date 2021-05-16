@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using accounts_api.RequestHandlers.Accounts;
 
 namespace accounts_api.Services
 {
     public interface IAccountsCatchupHostedService
     {
-        List<string> GetAccounts();
+        Dictionary<Guid, AccountSummary> Accounts { get; }
     }
 }

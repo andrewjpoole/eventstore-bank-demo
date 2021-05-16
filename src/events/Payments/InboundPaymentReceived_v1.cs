@@ -26,7 +26,7 @@ namespace events.Payments
         //};
 
         public Guid CorrelationId { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -53,7 +53,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
     
@@ -62,7 +62,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -71,7 +71,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -80,7 +80,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -90,7 +90,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountBalanceLedger(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountBalanceLedger(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -100,7 +100,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -110,7 +110,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -120,7 +120,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 
@@ -130,7 +130,7 @@ namespace events.Payments
         public Guid CorrelationId { get; init; }
         public int DestinationSortCode { get; init; }
         public int DestinationAccountNumber { get; init; }
-        public string StreamName() => SubscriptionNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber);
         public int Version() => 1;
     }
 }

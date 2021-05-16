@@ -12,6 +12,7 @@ using accounts_api.Services;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
+using events.Accounts;
 using infrastructure.EventStore;
 using infrastructure.StatisticsGatherer;
 using Microsoft.OpenApi.Models;
@@ -47,8 +48,12 @@ namespace accounts_api
             services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
             services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());
             services.AddTransient<ICatchupSubscription, CatchupSubscription>();
+            services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
+            services.AddSingleton<IEventPublisher, EventPublisher>();
             services.AddSingleton<IAccountsCatchupHostedService, AccountsCatchupHostedService>();
-            services.AddSingleton<IAccountTransactionsCatchupHostedService, AccountTransactionsCatchupHostedService>();
+            services.AddHostedService(sp => (AccountsCatchupHostedService)sp.GetService<IAccountsCatchupHostedService>());
+            //services.AddSingleton<IAccountTransactionsCatchupHostedService, AccountTransactionsCatchupHostedService>();
+            services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddScoped<IEndpointContextAccessor, EndpointContextAccessor>();
         }
 
@@ -76,10 +81,12 @@ namespace accounts_api
                 });
 
                 endpoints.MapGroupOfEndpointsForAPath("/api/v1/accounts", "Accounts", "everything to do with accounts")
-                    .WithGet<GetAccountsRequest, IEnumerable<AccountDetails>>("/", "Gets Accounts with various filter options")
-                    .WithGet<GetAccountByIdRequest, AccountDetails>("/{Id}", "Get a single account by Id")
-                    .WithPost<CreateAccountRequest, CreateAccountResponse>("/", "Create a new account", StatusCodes.Status201Created)
-                    .WithPut<UpdateAccountStatusRequest, AccountDetails>("/{Id}");
+                    .WithGet<GetAccountsRequest, IEnumerable<AccountSummary>>("/", "Gets Accounts with various filter options")
+                    .WithGet<GetAccountByIdRequest, AccountSummary>("/{Id}", "Get a single account by Id")
+                    .WithPost<CreateAccountRequest, CreateAccountResponse>("/", "Create a new account", StatusCodes.Status202Accepted)
+                    .WithPut<UpdateAccountStatusRequest, UpdateAccountStatusResponse>("/{Id}", "Update the status of an account", StatusCodes.Status202Accepted, 
+                        ParameterDictionaryBuilder.NewDictionary()
+                            .AddEnumParam("Status", typeof(AccountStatus), ParameterDictionaryBuilder.In.Query, true));
 
                 endpoints.MapGet("/Stats", async context =>
                 {

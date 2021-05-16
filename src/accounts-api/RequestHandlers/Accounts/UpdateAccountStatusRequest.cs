@@ -1,20 +1,26 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using accounts_api.Services;
 using AJP.MediatrEndpoints.Exceptions;
 using AJP.MediatrEndpoints.Swagger.Attributes;
+using events.Accounts;
 using MediatR;
 
 namespace accounts_api.RequestHandlers.Accounts
 {
-    public class UpdateAccountStatusRequest : IRequest<AccountDetails>
+    public class UpdateAccountStatusRequest : IRequest<UpdateAccountStatusResponse>
     {
         [SwaggerRouteParameter]
         public string Id { get; init; }
+
+        [SwaggerQueryParameter]
         public AccountStatus Status { get; init; }
     }
-    
-    public class UpdateAccountStatusRequestHandler : IRequestHandler<UpdateAccountStatusRequest, AccountDetails>
+
+    public class UpdateAccountStatusResponse { }
+
+    public class UpdateAccountStatusRequestHandler : IRequestHandler<UpdateAccountStatusRequest, UpdateAccountStatusResponse>
     {
         private readonly IAccountRepository _accountRepository;
 
@@ -23,14 +29,15 @@ namespace accounts_api.RequestHandlers.Accounts
             _accountRepository = accountRepository;
         }
         
-        public Task<AccountDetails> Handle(UpdateAccountStatusRequest request, CancellationToken cancellationToken)
+        public async Task<UpdateAccountStatusResponse> Handle(UpdateAccountStatusRequest request, CancellationToken cancellationToken)
         {
-            var account = _accountRepository.GetById(request.Id);
+            var account = _accountRepository.GetById(Guid.Parse(request.Id));
 
             if (account == null)
                 throw new NotFoundHttpException($"account with id:{request.Id} not found", "resource not found");
             
-            return Task.FromResult(_accountRepository.ChangeStatus(account.Id, request.Status));
+            var success = await _accountRepository.ChangeStatus(account.Id, request.Status);
+            return new UpdateAccountStatusResponse();
         }
     }
 }

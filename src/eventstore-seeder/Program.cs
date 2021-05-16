@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using accounts_api.RequestHandlers.Accounts;
 using events.Accounts;
 using infrastructure.EventStore;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +14,13 @@ namespace eventstore_seeder
     {
         static async Task Main(string[] args)
         {
-            var seeder = new Seeder();
-            await seeder.SeedInitialManagedAccounts();
+            //var seeder = new Seeder();
+            //await seeder.SeedInitialManagedAccounts();
 
             //var reader = new Reader();
             //reader.ReadAccountOpenedStream();
+
+            
         }
     }
 
@@ -80,7 +84,7 @@ namespace eventstore_seeder
             {
                 var accountOpened = new AccountOpenedEvent_v1
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = name,
                     SortCode = 408011,
                     AccountNumber = random.Next(10000000, 99999999),

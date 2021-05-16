@@ -11,7 +11,7 @@ namespace events.Sanctions
         public string SanctionedName { get; init; }
         public DateTime Added { get; init; }
 
-        public string StreamName() => SubscriptionNames.Sanctions.GlobalSanctionedNames;
+        public string StreamName() => StreamNames.Sanctions.GlobalSanctionedNames;
         public int  Version() => 1;
     }
 
@@ -20,7 +20,7 @@ namespace events.Sanctions
         public string SanctionedName { get; init; }
         public DateTime Removed { get; init; }
 
-        public string StreamName() => SubscriptionNames.Sanctions.GlobalSanctionedNames;
+        public string StreamName() => StreamNames.Sanctions.GlobalSanctionedNames;
         public int Version() => 1;
     }
 

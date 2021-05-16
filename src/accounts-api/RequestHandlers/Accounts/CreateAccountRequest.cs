@@ -1,27 +1,21 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using accounts_api.Services;
+using events.Accounts;
 using MediatR;
 
 namespace accounts_api.RequestHandlers.Accounts
 {
     public class CreateAccountRequest : IRequest<CreateAccountResponse>
     {
-        public string SortCode { get; init; }
-        public string AccountNumber { get; init; }
-        public decimal Balance { get; init; }
+        public int SortCode { get; init; }
+        public int AccountNumber { get; init; }
+        public string Name { get; init; }
     }
     
-    public class CreateAccountResponse : AccountDetails
+    public class CreateAccountResponse
     {
-        public CreateAccountResponse(AccountDetails account)
-        {
-            Id = account.Id;
-            SortCode = account.SortCode;
-            AccountNumber = account.AccountNumber;
-            Balance = account.Balance;
-            Status = account.Status;
-        }
     }
     
     public class CreateAccountRequestHandler : IRequestHandler<CreateAccountRequest, CreateAccountResponse>
@@ -33,16 +27,17 @@ namespace accounts_api.RequestHandlers.Accounts
             _accountRepository = accountRepository;
         }
         
-        public Task<CreateAccountResponse> Handle(CreateAccountRequest request, CancellationToken cancellationToken)
+        public async Task<CreateAccountResponse> Handle(CreateAccountRequest request, CancellationToken cancellationToken)
         {
-            var newAccount = _accountRepository.Create(new AccountDetails
+            var success = await _accountRepository.Create(new AccountDetails
             {
                 SortCode = request.SortCode,
                 AccountNumber = request.AccountNumber,
-                Balance = request.Balance,
-                Status = AccountStatus.Unblocked
+                AccountName = request.Name,
+                Status = AccountStatus.Opened,
+                Opened = DateTime.Now
             });
-            return Task.FromResult(new CreateAccountResponse(newAccount));
+            return new CreateAccountResponse();
         }
     }
 }

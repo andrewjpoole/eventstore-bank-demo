@@ -7,9 +7,10 @@ namespace accounts_api.Services
 {
     public interface IAccountRepository
     {
-        AccountDetails GetById(string id);
-        Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, events.Accounts.AccountStatus statusFilter = events.Accounts.AccountStatus.Any);
-        AccountDetails Create(AccountDetails newAccount);
-        AccountDetails ChangeStatus(string id, events.Accounts.AccountStatus status);
+        AccountSummary GetById(Guid id);
+        //Task<IEnumerable<AccountDetails>> GetAll(string sortcode = "", Func<decimal, bool> balanceCriteria = null, events.Accounts.AccountStatus statusFilter = events.Accounts.AccountStatus.Any);
+        Task<IEnumerable<AccountSummary>> GetAll(string sortcode = "", events.Accounts.AccountStatus statusFilter = events.Accounts.AccountStatus.Any);
+        Task<bool> Create(AccountDetails newAccount);
+        Task<bool> ChangeStatus(Guid id, events.Accounts.AccountStatus status);
     }
 }
