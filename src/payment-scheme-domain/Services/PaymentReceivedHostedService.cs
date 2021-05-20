@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +20,6 @@ namespace payment_scheme_domain.Services
         private readonly ILogger<PaymentReceivedHostedService> _logger;
         private readonly IPersistentSubscriptionService _persistentSubscriptionService;
         private readonly IEventPublisher _eventPublisher;
-        private PersistentSubscriptionSettings _settings;
 
         private readonly string _subscriptionGroupName = StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.InboundPaymentReceived);
 
@@ -40,24 +37,22 @@ namespace payment_scheme_domain.Services
                 _subscriptionGroupName,
                 "Inbound-payment-received",
                 cancellationToken,
-                _settings,
-                (subscription, @event, json, retryCount, cancellationToken) => 
+                (subscription, @event, json, retryCount, token) => 
                 {
                     _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType} on {_subscriptionGroupName} retryCount: {retryCount}");
                     return @event.Event.EventType switch
                     {
-                        nameof(InboundPaymentReceived_v1) => HandleEvent(@event, json),
+                        nameof(InboundPaymentReceived_v1) => HandleEvent(subscription, JsonSerializer.Deserialize<InboundPaymentReceived_v1>(json), token),
                         _ => throw new NotImplementedException()
                     };
                 });
         }
 
-        private async Task HandleEvent(ResolvedEvent @event, string json)
+        public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
         {
-            var eventData = JsonSerializer.Deserialize<InboundPaymentReceived_v1>(json);
-
             // simulate some work and publish the next event...
             await Task.Delay(new Random().Next(200, 600));
+
             // TODO actually validate the payment data ???
 
             var nextEvent = new InboundPaymentValidated_v1
@@ -68,6 +63,12 @@ namespace payment_scheme_domain.Services
             };
 
             await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _persistentSubscriptionService.Stop();
+            return base.StopAsync(cancellationToken);
         }
     }
 }

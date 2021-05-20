@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\accounts-api\accounts-api.csproj" />
     <ProjectReference Include="..\events\events.csproj" />
     <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
   </ItemGroup>

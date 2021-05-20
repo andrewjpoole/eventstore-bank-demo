@@ -11,8 +11,9 @@ namespace infrastructure.EventStore
             string streamName,
             string groupName,
             string subscriptionFriendlyName,
-            CancellationToken cancelationToken,
-            PersistentSubscriptionSettings persistentSubscriptionSettings,
+            CancellationToken cancellationToken,
             Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> handleEventAppeared);
+
+        void Stop();
     }
 }

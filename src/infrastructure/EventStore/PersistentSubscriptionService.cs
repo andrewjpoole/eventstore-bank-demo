@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,10 +11,7 @@ namespace infrastructure.EventStore
     public class PersistentSubscriptionService : IPersistentSubscriptionService
     {
         private readonly ILogger<PersistentSubscriptionService> _logger;
-        private readonly IEventStoreClientFactory _eventStoreClientFactory;
         private PersistentSubscription _subscription;
-        private EventStoreClient _client;
-        private StreamPosition _checkpoint;
         private CancellationToken _cancellationToken;
 
         private Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> _handleEventAppeared;
@@ -23,46 +21,73 @@ namespace infrastructure.EventStore
         private PersistentSubscriptionSettings _persistentSubscriptionSettings;
         private EventStorePersistentSubscriptionsClient _persistentSubscriptionsClient;
 
-        public PersistentSubscriptionService(ILogger<PersistentSubscriptionService> logger, IEventStoreClientFactory eventStoreClientFactory)
+        // TODO get some stats in here
+
+        public PersistentSubscriptionService(ILogger<PersistentSubscriptionService> logger)
         {
             _logger = logger;
-            _eventStoreClientFactory = eventStoreClientFactory; // may not need this one?
 
-            var settings = EventStoreClientSettings.Create("");
+            var credentials = new UserCredentials("admin", "changeit");
+            var settings = new EventStoreClientSettings
+            {
+                CreateHttpMessageHandler = () =>
+                    new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback =
+                            (message, certificate2, x509Chain, sslPolicyErrors) => true // ignore https
+                    },
+                ConnectivitySettings =
+                {
+                    Address = new Uri("http://localhost:2113"),
+                    Insecure = true
+                },
+                DefaultCredentials = credentials,
+                ConnectionName = "ajp"
+            };
+
             _persistentSubscriptionsClient = new EventStorePersistentSubscriptionsClient(settings);
+            
         }
 
         public async Task StartAsync(
             string streamName,
             string groupName,
             string subscriptionFriendlyName,
-            CancellationToken cancelationToken,
-            PersistentSubscriptionSettings persistentSubscriptionSettings,
+            CancellationToken cancellationToken,
             Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> handleEventAppeared)
         {
             _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
-            _groupName = string.IsNullOrEmpty(groupName) ? throw new ArgumentNullException(nameof(groupName)) : streamName;
+            _groupName = string.IsNullOrEmpty(groupName) ? throw new ArgumentNullException(nameof(groupName)) : groupName;
             _subscriptionFriendlyName = string.IsNullOrEmpty(subscriptionFriendlyName) ? throw new ArgumentNullException(nameof(subscriptionFriendlyName)) : subscriptionFriendlyName;
-            _persistentSubscriptionSettings = persistentSubscriptionSettings;
-            _handleEventAppeared = handleEventAppeared ?? throw new ArgumentNullException(nameof(handleEventAppeared));
+             _handleEventAppeared = handleEventAppeared ?? throw new ArgumentNullException(nameof(handleEventAppeared));
 
             _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName}  is starting...");
 
-            _cancellationToken = cancelationToken;
-            _client = _eventStoreClientFactory.CreateClient();
-
-            _checkpoint = StreamPosition.Start;
+            _cancellationToken = cancellationToken;
             await Subscribe();
+        }
+
+        public void Stop()
+        {
+            _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} StopAsync called, disposing subscription...");
+            _subscription.Dispose();
         }
 
         private async Task Subscribe()
         {
             _logger.LogDebug($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
-            
-            _subscription = await _persistentSubscriptionsClient.SubscribeAsync(_streamName, _groupName, EventAppeared,
-                SubscriptionDropped, autoAck: true, bufferSize: 10, cancellationToken: _cancellationToken);
 
-            _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
+            try
+            {
+                _subscription = await _persistentSubscriptionsClient.SubscribeAsync(_streamName, _groupName, EventAppeared,
+                    SubscriptionDropped, autoAck: false, bufferSize: 10, cancellationToken: _cancellationToken);
+
+                _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} exception subscribing to {_streamName} {e}");
+            }
         }
 
         private Task EventAppeared(PersistentSubscription subscription, ResolvedEvent @event, int? retryCount, CancellationToken cancellationToken)
@@ -74,9 +99,17 @@ namespace infrastructure.EventStore
                 return Task.FromCanceled(_cancellationToken);
             }
 
-            _checkpoint = @event.OriginalEventNumber;
-
-            return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), retryCount, _cancellationToken);
+            try
+            {
+                _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), retryCount, _cancellationToken).GetAwaiter().GetResult();
+                subscription.Ack(@event);
+                return Task.CompletedTask;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception while handling event from {_subscriptionFriendlyName}: {e}");
+                throw;
+            }
         }
         
         private void SubscriptionDropped(PersistentSubscription subscription, SubscriptionDroppedReason reason, Exception ex)
@@ -86,6 +119,8 @@ namespace infrastructure.EventStore
             if (reason != SubscriptionDroppedReason.Disposed)
             {
                 // Resubscribe if the client didn't stop the subscription
+                Task.Delay(TimeSpan.FromSeconds(2)).GetAwaiter().GetResult();
+                _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} attempting to resubscribe...");
                 _ = Subscribe();
             }
         }
