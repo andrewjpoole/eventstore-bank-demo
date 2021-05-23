@@ -41,14 +41,25 @@ namespace payment_scheme_domain
             services.AddSingleton<IMediatrEndpointsProcessors, RequestProcessors>();
             services.AddSingleton<IStatisticsTaskQueue, StatisticsTaskQueue>();
             services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
-            services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());
+            services.AddHostedService(sp => sp.GetService<IStatisticsQueuedHostedService>() as StatisticsQueuedHostedService);
             services.AddTransient<ICatchupSubscription, CatchupSubscription>();
             services.AddTransient<IPersistentSubscriptionService, PersistentSubscriptionService>();
             services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddSingleton<IEventPublisher, EventPublisher>();
+            services.AddSingleton<ISanctionsApiClient, SanctionsApiClient>();
+            services.AddSingleton<IInboundPaymentReadModelFactory, InboundPaymentReadModelFactory>();
 
-            services.AddSingleton<IPaymentReceivedHostedService, PaymentReceivedHostedService>();
-            services.AddHostedService(sp => (PaymentReceivedHostedService)sp.GetService<IPaymentReceivedHostedService>());
+            services.AddSingleton<IPaymentValidaterHostedService, PaymentValidaterHostedService>();
+            services.AddHostedService(sp => sp.GetService<IPaymentValidaterHostedService>() as PaymentValidaterHostedService);
+
+            services.AddSingleton<IPaymentSanctionsCheckerHostedService, PaymentSanctionsCheckerHostedService>();
+            services.AddHostedService(sp => sp.GetService<IPaymentSanctionsCheckerHostedService>() as PaymentSanctionsCheckerHostedService);
+
+            services.AddSingleton<IPaymentAccountStatusCheckerHostedService, PaymentAccountStatusCheckerHostedService>();
+            services.AddHostedService(sp => sp.GetService<IPaymentAccountStatusCheckerHostedService>() as PaymentAccountStatusCheckerHostedService);
+
+            services.AddSingleton<IPaymentAccountTransactionCreationHostedService, PaymentAccountTransactionCreationHostedService>();
+            services.AddHostedService(sp => sp.GetService<IPaymentAccountTransactionCreationHostedService>() as PaymentAccountTransactionCreationHostedService);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

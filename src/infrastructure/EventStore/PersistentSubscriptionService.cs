@@ -18,8 +18,7 @@ namespace infrastructure.EventStore
         private string _streamName;
         private string _groupName;
         private string _subscriptionFriendlyName;
-        private PersistentSubscriptionSettings _persistentSubscriptionSettings;
-        private EventStorePersistentSubscriptionsClient _persistentSubscriptionsClient;
+        private readonly EventStorePersistentSubscriptionsClient _persistentSubscriptionsClient;
 
         // TODO get some stats in here
 
@@ -33,8 +32,7 @@ namespace infrastructure.EventStore
                 CreateHttpMessageHandler = () =>
                     new HttpClientHandler
                     {
-                        ServerCertificateCustomValidationCallback =
-                            (message, certificate2, x509Chain, sslPolicyErrors) => true // ignore https
+                        ServerCertificateCustomValidationCallback = (message, certificate2, x509Chain, sslPolicyErrors) => true // ignore https
                     },
                 ConnectivitySettings =
                 {

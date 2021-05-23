@@ -11,31 +11,33 @@ using Microsoft.Extensions.Logging;
 
 namespace payment_scheme_domain.Services
 {
-    public interface IPaymentReceivedHostedService
+    public class PaymentValidaterHostedService : BackgroundService, IPaymentValidaterHostedService
     {
-    }
-
-    public class PaymentReceivedHostedService : BackgroundService, IPaymentReceivedHostedService
-    {
-        private readonly ILogger<PaymentReceivedHostedService> _logger;
+        private readonly ILogger<PaymentValidaterHostedService> _logger;
         private readonly IPersistentSubscriptionService _persistentSubscriptionService;
         private readonly IEventPublisher _eventPublisher;
 
-        private readonly string _subscriptionGroupName = StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.InboundPaymentReceived);
+        private readonly string _streamName;
+        private readonly string _subscriptionGroupName;
+        private readonly string _subscriptionFriendlyName;
 
-        public PaymentReceivedHostedService(ILogger<PaymentReceivedHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventPublisher eventPublisher)
+        public PaymentValidaterHostedService(ILogger<PaymentValidaterHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventPublisher eventPublisher)
         {
             _logger = logger;
             _persistentSubscriptionService = persistentSubscriptionService;
             _eventPublisher = eventPublisher;
+
+            _streamName = StreamNames.PaymentProcessing.AllInboundPaymentReceived;
+            _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
+            _subscriptionFriendlyName = "Inbound-payment-received";
         }
 
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             return _persistentSubscriptionService.StartAsync(
-                StreamNames.PaymentProcessing.InboundPaymentReceived,
+                _streamName,
                 _subscriptionGroupName,
-                "Inbound-payment-received",
+                _subscriptionFriendlyName,
                 cancellationToken,
                 (subscription, @event, json, retryCount, token) => 
                 {

@@ -1,4 +1,5 @@
-﻿using EventStore.Client;
+﻿using events;
+using EventStore.Client;
 
 namespace eventstore_seeder
 {
@@ -10,8 +11,12 @@ namespace eventstore_seeder
             var settings = new PersistentSubscriptionSettings(
                 resolveLinkTos: true,
                 startFrom: StreamPosition.Start);
-
-            persistentSubscriptionFactory.Create("$et-InboundPaymentReceived_v1 ", "$et-InboundPaymentReceived_v1-SubscriptionGroup", settings);
+            
+            persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentReceived, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentReceived), settings);
+            persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentValidated, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentValidated), settings);
+            persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentSanctionsChecked, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentSanctionsChecked), settings);
+            persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentAccountStatusChecked, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentAccountStatusChecked), settings);
+            persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentBalanceUpdated, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentBalanceUpdated), settings);
         }
     }
 }

@@ -50,22 +50,6 @@ namespace payment_scheme_simulator
 
                     var @event = await randomInboundPaymentGenerator.Generate(PaymentScheme.Bacs, PaymentType.Credit);
                     
-                    //var @event = new InboundPaymentReceived_v1
-                    //{
-                    //    CorrelationId = Guid.NewGuid(),
-                    //    Amount = decimal.Parse($"{random.Next(1, 1_000_000)}.{random.Next(0, 99)}"),
-                    //    PaymentReference = $"Simulated inbound payment {Guid.NewGuid().ToString().Substring(0,6)}",
-                    //    ProcessingDate = DateTime.Now.Date,
-                    //    Scheme = PaymentScheme.Bacs,
-                    //    Type = PaymentType.Credit,
-                    //    OriginatingSortCode = 209940,
-                    //    OriginatingAccountNumber = random.Next(10000000, 99999999),
-                    //    OriginatingAccountName = "",
-                    //    DestinationSortCode = 716151,
-                    //    DestinationAccountNumber = random.Next(10000000, 99999999),
-                    //    DestinationAccountName = ""
-                    //};
-
                     var result = await publisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
 
                     await context.Response.WriteAsync($"{result}");

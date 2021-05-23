@@ -11,6 +11,8 @@ namespace eventstore_seeder
             
             var persistentSubscriptionSeeder = new PersistentSubscriptionsSeeder();
             persistentSubscriptionSeeder.Seed();
+
+            // TODO start the built in projections?
         }
     }
 }
