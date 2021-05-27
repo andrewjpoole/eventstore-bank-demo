@@ -75,4 +75,5 @@ if accountStatus == blocked or closed or insufficientFunds -> `paymentFailedEven
 - [ ] UI blazor wasm?
 - [ ] demonstrate how the various handlers/subscriptions etc can be tested
 - [ ] demonstrate potential strategies for scheduling future events?
+- [ ] add some thoughts/ideas on PII data, string encryption with deletable key etc
 
