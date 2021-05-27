@@ -31,14 +31,17 @@ There are also some shared projects
 in eventsourcing anything of interest to the system is modeled as an event, with a name which describes what has happened in past tense:
 
 happy path -> `paymentReceivedEvent` -> `paymentValidatedEvent` -> `sanctionsCheckedEvent` -> `accountStatusCheckedEvent` -> `balanceUpdatedEvent`
+
 if payment not valid then `paymentReturnedEvent` or `paymentFailedEvent`
+
 if sanctioned == true -> `paymentHeldEvent` -> manual override (continue) or `paymentFailedEvent`
+
 if accountStatus == blocked or closed or insufficientFunds -> `paymentFailedEvent`
 
 ## Event Store / eventsourcing Features to be demonstrated
 
 * immutable events in streams, writing, reading and subscribing
-* built=in Event Store projections
+* builtin Event Store projections
 * custom js Projections
 * read models - a component which represents an aggregate by maintaining state read from events
 * competing consumers - a server managed subscription, where events are dealt to one or more subscribers via a strategy sucj as round robin, enables parallel processing a bit like a message bus
