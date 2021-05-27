@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace payment_scheme_domain.Services
@@ -12,15 +13,13 @@ namespace payment_scheme_domain.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<InboundPaymentReadModel> Create(int sortCode, int accountNumber, Guid correlationId)
+        public async Task<IInboundPaymentReadModel> Create(int sortCode, int accountNumber, Guid correlationId, CancellationToken cancellationToken)
         {
-            var inboundPaymentReadModel = _serviceProvider.GetService(typeof(InboundPaymentReadModel)) as InboundPaymentReadModel;
-
-            if (inboundPaymentReadModel is null)
+            if (!(_serviceProvider.GetService(typeof(IInboundPaymentReadModel)) is IInboundPaymentReadModel inboundPaymentReadModel))
                 throw new ApplicationException(
                     "Couldn't retrieve an instance of InboundPaymentReadModel from the ServiceProvider");
 
-            await inboundPaymentReadModel.Read(sortCode, accountNumber, correlationId);
+            await inboundPaymentReadModel.Read(sortCode, accountNumber, correlationId, cancellationToken);
             return inboundPaymentReadModel;
         }
     }

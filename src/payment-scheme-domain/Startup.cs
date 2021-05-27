@@ -43,11 +43,15 @@ namespace payment_scheme_domain
             services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
             services.AddHostedService(sp => sp.GetService<IStatisticsQueuedHostedService>() as StatisticsQueuedHostedService);
             services.AddTransient<ICatchupSubscription, CatchupSubscription>();
+            services.AddTransient<IEventStreamReader, EventStreamReader>();
             services.AddTransient<IPersistentSubscriptionService, PersistentSubscriptionService>();
             services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddSingleton<IEventPublisher, EventPublisher>();
             services.AddSingleton<ISanctionsApiClient, SanctionsApiClient>();
             services.AddSingleton<IInboundPaymentReadModelFactory, InboundPaymentReadModelFactory>();
+            services.AddSingleton<IAccountDetailsReadModelFactory, AccountDetailsReadModelFactory>();
+            services.AddTransient<IInboundPaymentReadModel, InboundPaymentReadModel>();
+            services.AddTransient<IAccountDetailsReadModel, AccountDetailsReadModel>();
 
             services.AddSingleton<IPaymentValidaterHostedService, PaymentValidaterHostedService>();
             services.AddHostedService(sp => sp.GetService<IPaymentValidaterHostedService>() as PaymentValidaterHostedService);

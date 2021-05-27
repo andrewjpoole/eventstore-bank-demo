@@ -17,18 +17,28 @@ namespace payment_scheme_domain.Services
         private readonly IPersistentSubscriptionService _persistentSubscriptionService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ISanctionsApiClient _sanctionsApiClient;
+        private readonly IInboundPaymentReadModelFactory _inboundPaymentReadModelFactory;
+        private readonly IAccountDetailsReadModelFactory _accountDetailsReadModelFactory;
 
         private readonly string _streamName;
         private readonly string _subscriptionGroupName;
         private readonly string _subscriptionFriendlyName;
 
 
-        public PaymentSanctionsCheckerHostedService(ILogger<PaymentSanctionsCheckerHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventPublisher eventPublisher, ISanctionsApiClient sanctionsApiClient)
+        public PaymentSanctionsCheckerHostedService(
+            ILogger<PaymentSanctionsCheckerHostedService> logger, 
+            IPersistentSubscriptionService persistentSubscriptionService, 
+            IEventPublisher eventPublisher, 
+            ISanctionsApiClient sanctionsApiClient, 
+            IInboundPaymentReadModelFactory inboundPaymentReadModelFactory,
+            IAccountDetailsReadModelFactory accountDetailsReadModelFactory)
         {
             _logger = logger;
             _persistentSubscriptionService = persistentSubscriptionService;
             _eventPublisher = eventPublisher;
             _sanctionsApiClient = sanctionsApiClient;
+            _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
+            _accountDetailsReadModelFactory = accountDetailsReadModelFactory;
 
             _streamName = StreamNames.PaymentProcessing.AllInboundPaymentValidated;
             _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
@@ -55,13 +65,15 @@ namespace payment_scheme_domain.Services
 
         public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
         {
-            //var accountsReadModel = _accountsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber);
-            //await accountsReadModel.ReadAccountDetails();
+            var paymentReadModel = await _inboundPaymentReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
+            var accountDetailsReadModel = await _accountDetailsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, cancellationToken);
 
-            // or create AccountsApiClient and look up name using that?
-            // or read from a js projection?
+            // check all possible names
+            var isSanctioned = await _sanctionsApiClient.CheckIfNameIsSanctioned(accountDetailsReadModel.Name);
+            isSanctioned = await _sanctionsApiClient.CheckIfNameIsSanctioned(paymentReadModel.OriginatingAccountName);
+            isSanctioned = await _sanctionsApiClient.CheckIfNameIsSanctioned(paymentReadModel.DestinationAccountName);
 
-            var isSanctioned = false; //await _sanctionsApiClient.CheckIfNameIsSanctioned(accountsReadModel.AccountName);
+            // TODO some logging
 
             if (isSanctioned)
             {

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
-using events;
 using EventStore.Client;
 
 namespace infrastructure.EventStore
 {
-    public class EventStreamReader<T> : IEventStreamReader<T> where T : IEvent
+    public class EventStreamReader : IEventStreamReader
     {
         private readonly IEventStoreClientFactory _eventStoreClientFactory;
 
@@ -18,23 +15,25 @@ namespace infrastructure.EventStore
             _eventStoreClientFactory = eventStoreClientFactory;
         }
 
-        public async Task<IEnumerable<(T EventData, EventMetadata EventMetadata)>> ReadEventsFromStream(string streamName)
+        public async Task<IEnumerable<(string typeName, string json, EventMetadata EventMetadata)>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
         {
-            var client = _eventStoreClientFactory.CreateClient();
+            await using var client = _eventStoreClientFactory.CreateClient();
 
-            var events = client.ReadStreamAsync(Direction.Forwards, streamName, StreamPosition.Start, 1000, resolveLinkTos:true);
+            var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos:resolveLinkTos);
 
-            var results = new List<(T EventData, EventMetadata EventMetadata)>();
+            var results = new List<(string typeName, string json, EventMetadata EventMetadata)>();
             await foreach (var @event in events)
             {
-                var eventData = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(@event.Event.Data.ToArray()));
+                if (cancelationToken.IsCancellationRequested)
+                    return results;
+
                 var eventMetadata = new EventMetadata
                 {
-                    Created = @event.Event.Created,
-                    EventId = @event.Event.EventId.ToGuid(),
-                    EventNumber = @event.Event.EventNumber
+                    Created = @event.OriginalEvent.Created,
+                    EventId = @event.OriginalEvent.EventId.ToGuid(),
+                    EventNumber = @event.OriginalEvent.EventNumber
                 };
-                results.Add((eventData, eventMetadata));
+                results.Add((@event.OriginalEvent.EventType, Encoding.UTF8.GetString(@event.OriginalEvent.Data.ToArray()), eventMetadata));
             }
             
             return results;

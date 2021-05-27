@@ -8,7 +8,7 @@ namespace events
         
         public class Accounts
         {
-            public static string AccountOpened(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Details";
+            public static string AccountDetails(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Details";
 
             public const string AllAccountsOpened = "$et-AccountOpenedEvent_v1";
             public const string AllAccounts = "$ce-Account";

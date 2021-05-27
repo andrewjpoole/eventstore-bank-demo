@@ -6,11 +6,11 @@ namespace eventstore_seeder
     {
         static async Task Main(string[] args)
         {
-            //var seeder = new OwnedAccountsSeeder();
-            //await seeder.SeedInitialManagedAccounts();
+            var seeder = new OwnedAccountsSeeder();
+            await seeder.SeedInitialManagedAccounts();
             
-            var persistentSubscriptionSeeder = new PersistentSubscriptionsSeeder();
-            persistentSubscriptionSeeder.Seed();
+            //var persistentSubscriptionSeeder = new PersistentSubscriptionsSeeder();
+            //persistentSubscriptionSeeder.Seed();
 
             // TODO start the built in projections?
         }

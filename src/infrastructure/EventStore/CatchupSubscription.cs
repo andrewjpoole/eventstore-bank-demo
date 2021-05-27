@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace infrastructure.EventStore
 {
-    public class CatchupSubscription : ICatchupSubscription
+    public class CatchupSubscription : ICatchupSubscription, IDisposable
     {
         private readonly ILogger<CatchupSubscription> _logger;
         private readonly IEventStoreClientFactory _eventStoreClientFactory;
@@ -49,7 +49,7 @@ namespace infrastructure.EventStore
         {
             _logger.LogDebug($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
             
-            _subscription = await _client.SubscribeToStreamAsync(_streamName, EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
+            _subscription = await _client.SubscribeToStreamAsync(_streamName, _checkpoint, EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
             
             _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }
@@ -77,6 +77,12 @@ namespace infrastructure.EventStore
                 // Resubscribe if the client didn't stop the subscription
                 _=Subscribe();
             }
+        }
+
+        public void Dispose()
+        {
+            _subscription?.Dispose();
+            _client?.Dispose();
         }
     }
 }

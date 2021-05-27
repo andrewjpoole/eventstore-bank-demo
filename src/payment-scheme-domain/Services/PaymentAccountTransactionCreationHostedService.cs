@@ -54,20 +54,21 @@ namespace payment_scheme_domain.Services
 
         public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
         {
-            var paymentReadModel = await _inboundPaymentReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId);
+            var paymentReadModel = await _inboundPaymentReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
             
-            // simulate posting a transaction
-            await Task.Delay(new Random().Next(200, 600));
+            var transactionId = Guid.NewGuid(); // replace this with a call to accounts to create the transaction etc
 
             var nextEvent = new InboundPaymentBalanceUpdated_v1()
             {
                 CorrelationId = eventData.CorrelationId,
                 DestinationSortCode = eventData.DestinationSortCode,
                 DestinationAccountNumber = eventData.DestinationAccountNumber,
-                Amount = paymentReadModel.Amount
+                Amount = paymentReadModel.Amount,
+                ClearedTransactionId = transactionId
             };
-
+            
             await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+            
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)

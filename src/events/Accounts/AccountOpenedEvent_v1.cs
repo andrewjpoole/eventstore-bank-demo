@@ -11,7 +11,7 @@ namespace events.Accounts
         public AccountStatus Status { get; init; }
         public DateTime Opened { get; init; }
 
-        public string StreamName() => StreamNames.Accounts.AccountOpened(SortCode, AccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountDetails(SortCode, AccountNumber);
         public int Version() => 1;
     }
 
@@ -22,7 +22,7 @@ namespace events.Accounts
         public int AccountNumber { get; init; }
         public AccountStatus Status { get; init; }
 
-        public string StreamName() => StreamNames.Accounts.AccountOpened(SortCode, AccountNumber);
+        public string StreamName() => StreamNames.Accounts.AccountDetails(SortCode, AccountNumber);
         public int Version() => 1;
     }
 }

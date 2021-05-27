@@ -5,7 +5,7 @@ using EventStore.Client;
 
 namespace infrastructure.EventStore
 {
-    public interface ICatchupSubscription
+    public interface ICatchupSubscription : IDisposable
     {
         Task StartAsync(
             string streamName,
