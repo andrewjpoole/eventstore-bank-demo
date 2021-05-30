@@ -5,8 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
+using AJP.MediatrEndpoints;
+using AJP.MediatrEndpoints.EndpointRegistration;
+using AJP.MediatrEndpoints.Swagger;
 using events.Payments;
 using infrastructure.EventStore;
+using Microsoft.OpenApi.Models;
+using payment_scheme_simulator.RequestHandlers;
 using payment_scheme_simulator.Services;
 
 namespace payment_scheme_simulator
@@ -17,6 +22,23 @@ namespace payment_scheme_simulator
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(); // only needed for swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Scheme Simulator Api",
+                    Version = "v1",
+                    Description = "Api for simulating inbound payments"
+                });
+
+                c.DocumentFilter<AddEndpointsDocumentFilter>();
+            });
+
+            services.AddMediatrEndpointsSwagger();
+
+            services.AddMediatrEndpoints(typeof(Startup));
+
             services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
             services.AddTransient<IEventPublisher, EventPublisher>();
             services.AddSingleton<IRandomInboundPaymentReceivedGenerator, RandomInboundPaymentReceivedGenerator>();
@@ -30,30 +52,23 @@ namespace payment_scheme_simulator
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Scheme Simulator API V1");
+            });
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+               endpoints.MapGroupOfEndpointsForAPath("/api/v1/inbound-payments", "Inbound Payments", "methods to simulate inbound payments")
+                    .WithPost<SimulateRandomInboundPaymentRequest, SimulatedInboundPaymentResponse>("random",
+                        "Simulates an inbound payment of a random amount, from a random sortcode and account number, to a random owned account.")
+                    .WithPost<SimulateInboundPaymentRequest, SimulatedInboundPaymentResponse>("manual",
+                        "Simulates an inbound payment of a specified amount, from a specified sortcode and account number, to a specified owned account. Any fields left blank will be randomised");
+                // add start and stop methods and a background service which will randomly spit out random payments according to min and max params etc
 
-                endpoints.MapGet("/events/new-inbound-payment", async context =>
-                {
-                    var cancellationTokenSource = new CancellationTokenSource();
-
-                    var publisher = context.RequestServices.GetService<IEventPublisher>();
-                    var randomInboundPaymentGenerator = context.RequestServices.GetService<IRandomInboundPaymentReceivedGenerator>();
-
-                    var random = new Random();
-
-                    var @event = await randomInboundPaymentGenerator.Generate(PaymentScheme.Bacs, PaymentType.Credit);
-                    
-                    var result = await publisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
-
-                    await context.Response.WriteAsync($"{result}");
-                });
             });
         }
     }

@@ -18,6 +18,7 @@
     "payment_scheme_simulator": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5006/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
