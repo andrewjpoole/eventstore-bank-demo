@@ -2,12 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace infrastructure.StatisticsGatherer
-{
-    public interface IStatisticsTaskQueue
-    {
-        void QueueStatisticsWorkItem((DateTime ResponseSent, long durationInTicks) durationRecording);
+namespace Infrastructure.StatisticsGatherer;
 
-        Task<(DateTime ResponseSent, long durationInTicks)> DequeueAsync(CancellationToken cancellationToken);
-    }
+public interface IStatisticsTaskQueue
+{
+    void QueueStatisticsWorkItem((DateTime ResponseSent, long durationInTicks) durationRecording);
+
+    Task<(DateTime ResponseSent, long durationInTicks)> DequeueAsync(CancellationToken cancellationToken);
 }

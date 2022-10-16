@@ -1,21 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31019.35
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "payment-scheme-simulator", "payment-scheme-simulator\payment-scheme-simulator.csproj", "{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentSchemeSimulator", "PaymentSchemeSimulatorApp\PaymentSchemeSimulator.csproj", "{FC578D40-94CA-4F8C-AAA3-F97BA218F36F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "events", "events\events.csproj", "{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{ECCC49EB-AF2D-4455-893F-2CE8CDCB5293}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "infrastructure", "infrastructure\infrastructure.csproj", "{ED7A1287-DE2E-48E9-9439-8F471A0490CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{ED7A1287-DE2E-48E9-9439-8F471A0490CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "accounts-api", "accounts-api\accounts-api.csproj", "{4346BC4D-22FC-46ED-A263-CA6C044D8022}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountsApi", "AccountsApp\AccountsApi.csproj", "{4346BC4D-22FC-46ED-A263-CA6C044D8022}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eventstore-seeder", "eventstore-seeder\eventstore-seeder.csproj", "{B36E8979-F3CA-4DE5-A0D2-312860540EA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventstoreSeeder", "EventstoreSeeder\EventstoreSeeder.csproj", "{B36E8979-F3CA-4DE5-A0D2-312860540EA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sanctions-api", "sanctions-api\sanctions-api.csproj", "{0DEA4499-9B4F-4583-AC66-C2494990135A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanctionsApi", "SanctionsApp\SanctionsApi.csproj", "{0DEA4499-9B4F-4583-AC66-C2494990135A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "payment-scheme-domain", "payment-scheme-domain\payment-scheme-domain.csproj", "{83F239A0-F91A-4C0E-89AB-D20028C78700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentSchemeDomain", "PaymentSchemeDomain\PaymentSchemeDomain.csproj", "{83F239A0-F91A-4C0E-89AB-D20028C78700}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentReadModel", "PaymentReadModel\PaymentReadModel.csproj", "{B5A3A82C-18AE-4AB2-9930-257D632E922B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83F239A0-F91A-4C0E-89AB-D20028C78700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A3A82C-18AE-4AB2-9930-257D632E922B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A3A82C-18AE-4AB2-9930-257D632E922B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A3A82C-18AE-4AB2-9930-257D632E922B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A3A82C-18AE-4AB2-9930-257D632E922B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

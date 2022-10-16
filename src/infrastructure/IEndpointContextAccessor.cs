@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace infrastructure
+namespace Infrastructure;
+
+public interface IEndpointContextAccessor
 {
-    public interface IEndpointContextAccessor
-    {
-        HttpContext CurrentContext { get; set; }
-    }
+    HttpContext CurrentContext { get; set; }
 }

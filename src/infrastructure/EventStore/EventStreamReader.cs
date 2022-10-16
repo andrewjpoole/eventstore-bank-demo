@@ -4,39 +4,38 @@ using System.Threading;
 using System.Threading.Tasks;
 using EventStore.Client;
 
-namespace infrastructure.EventStore
+namespace Infrastructure.EventStore;
+
+public class EventStreamReader : IEventStreamReader
 {
-    public class EventStreamReader : IEventStreamReader
+    private readonly IEventStoreClientFactory _eventStoreClientFactory;
+
+    public EventStreamReader(IEventStoreClientFactory eventStoreClientFactory)
     {
-        private readonly IEventStoreClientFactory _eventStoreClientFactory;
+        _eventStoreClientFactory = eventStoreClientFactory;
+    }
 
-        public EventStreamReader(IEventStoreClientFactory eventStoreClientFactory)
+    public async Task<IEnumerable<(string typeName, string json, EventMetadata EventMetadata)>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
+    {
+        await using var client = _eventStoreClientFactory.CreateClient();
+
+        var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos:resolveLinkTos);
+
+        var results = new List<(string typeName, string json, EventMetadata EventMetadata)>();
+        await foreach (var @event in events)
         {
-            _eventStoreClientFactory = eventStoreClientFactory;
-        }
+            if (cancelationToken.IsCancellationRequested)
+                return results;
 
-        public async Task<IEnumerable<(string typeName, string json, EventMetadata EventMetadata)>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
-        {
-            await using var client = _eventStoreClientFactory.CreateClient();
-
-            var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos:resolveLinkTos);
-
-            var results = new List<(string typeName, string json, EventMetadata EventMetadata)>();
-            await foreach (var @event in events)
+            var eventMetadata = new EventMetadata
             {
-                if (cancelationToken.IsCancellationRequested)
-                    return results;
-
-                var eventMetadata = new EventMetadata
-                {
-                    Created = @event.OriginalEvent.Created,
-                    EventId = @event.OriginalEvent.EventId.ToGuid(),
-                    EventNumber = @event.OriginalEvent.EventNumber
-                };
-                results.Add((@event.OriginalEvent.EventType, Encoding.UTF8.GetString(@event.OriginalEvent.Data.ToArray()), eventMetadata));
-            }
-            
-            return results;
+                Created = @event.OriginalEvent.Created,
+                EventId = @event.OriginalEvent.EventId.ToGuid(),
+                EventNumber = @event.OriginalEvent.EventNumber
+            };
+            results.Add((@event.OriginalEvent.EventType, Encoding.UTF8.GetString(@event.OriginalEvent.Data.ToArray()), eventMetadata));
         }
+            
+        return results;
     }
 }

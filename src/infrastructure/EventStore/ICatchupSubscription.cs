@@ -3,14 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using EventStore.Client;
 
-namespace infrastructure.EventStore
+namespace Infrastructure.EventStore;
+
+public interface ICatchupSubscription : IDisposable
 {
-    public interface ICatchupSubscription : IDisposable
-    {
-        Task StartAsync(
-            string streamName,
-            string subscriptionFriendlyName,
-            CancellationToken cancelationToken,
-            Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
-    }
+    Task StartAsync(
+        string streamName,
+        string subscriptionFriendlyName,
+        CancellationToken cancelationToken,
+        Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
 }
