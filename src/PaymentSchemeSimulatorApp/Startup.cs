@@ -41,6 +41,7 @@ public class Startup
         services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
         services.AddTransient<IEventPublisher, EventPublisher>();
         services.AddSingleton<IRandomInboundPaymentReceivedGenerator, RandomInboundPaymentReceivedGenerator>();
+        services.AddSingleton<IAccountsApiClient, AccountsApiClient>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

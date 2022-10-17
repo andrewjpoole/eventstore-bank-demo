@@ -67,9 +67,7 @@ public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPayments
             Type = @event.Type,
             HeldPaymentReleaseToken = Guid.NewGuid()
         };
-
-        if(@event.pa)
-
+        
         if(_heldPayments.ContainsKey(@event.PaymentId))
             _heldPayments[@event.PaymentId] = heldPayment;
         else

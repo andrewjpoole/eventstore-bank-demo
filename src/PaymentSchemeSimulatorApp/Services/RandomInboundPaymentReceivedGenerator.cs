@@ -12,11 +12,18 @@ namespace payment_scheme_simulator.Services;
 
 public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceivedGenerator
 {
+    private readonly IAccountsApiClient _accountsApiClient;
+
+    public RandomInboundPaymentReceivedGenerator(IAccountsApiClient accountsApiClient)
+    {
+        _accountsApiClient = accountsApiClient;
+    }
+
     public async Task<InboundPaymentReceived_v1> Generate(PaymentScheme scheme, PaymentType type, bool simulatedPaymentShouldBeSanctioned = false)
     {
         var random = new Random();
 
-        var ownedAccount = GetRandomOwnedAccountFromList(random);
+        var ownedAccount = await GetRandomOwnedAccountFromList(random);
         var externalAccount = await GetRandomExternalAccountDetails(random);
 
         if (simulatedPaymentShouldBeSanctioned)
@@ -44,19 +51,20 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
         return @event;
     }
 
-    private (string Name, int SortCode, int AccountNumber) GetRandomOwnedAccountFromList(Random random)
+    private async Task<(string Name, int SortCode, int AccountNumber)> GetRandomOwnedAccountFromList(Random random)
     {
-        // ToDo switch to using a js projection of accounts?
+        //var filePath = @"c:\temp\accounts.json";
+        //if (!File.Exists(filePath))
+        //    throw new FileNotFoundException($"Can't fine {filePath}");
 
-        var filePath = @"c:\temp\accounts.json";
-        if (!File.Exists(filePath))
-            throw new FileNotFoundException($"Can't fine {filePath}");
+        //var existingAccountsJson = File.ReadAllText(filePath);
+        //var existingAccounts = JsonSerializer.Deserialize<List<AccountSummary>>(existingAccountsJson, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
 
-        var existingAccountsJson = File.ReadAllText(filePath);
-        var existingAccounts = JsonSerializer.Deserialize<List<AccountSummary>>(existingAccountsJson, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
+        var existingAccounts = await _accountsApiClient.GetAccountSummaries();
+        var existingAccountList = existingAccounts.ToList();
 
-        var randomIndex = random.Next(0, existingAccounts.Count() - 1);
-        var existingAccount = existingAccounts[randomIndex];
+        var randomIndex = random.Next(0, existingAccountList.Count() - 1);
+        var existingAccount = existingAccountList[randomIndex];
         return (existingAccount.AccountName, existingAccount.SortCode, existingAccount.AccountNumber);
     }
 

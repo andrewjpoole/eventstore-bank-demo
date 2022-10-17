@@ -54,8 +54,8 @@ public class Startup
         services.AddHostedService(sp => (SanctionsCatchupHostedService)sp.GetService<ISanctionsCatchupHostedService>());
 
         services.AddTransient<IInboundPaymentReadModel, InboundPaymentReadModel>();
-        services.AddTransient<IHeldPaymentsCatchupHostedService, HeldPaymentsCatchupHostedService>();
-        services.AddHostedService<HeldPaymentsCatchupHostedService>();
+        services.AddSingleton<IHeldPaymentsCatchupHostedService, HeldPaymentsCatchupHostedService>();
+        services.AddHostedService(provider => (HeldPaymentsCatchupHostedService)provider.GetService<IHeldPaymentsCatchupHostedService>());
         services.AddTransient<IEventStreamReader, EventStreamReader>();
 
         services.AddSingleton<IEventDeserialiser, EventDeserialiser>();
