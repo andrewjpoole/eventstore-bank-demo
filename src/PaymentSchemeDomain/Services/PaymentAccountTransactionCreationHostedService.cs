@@ -6,6 +6,7 @@ using Domain;
 using Domain.Events.Payments;
 using EventStore.Client;
 using Infrastructure.EventStore;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PaymentReadModel;
@@ -16,6 +17,7 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
 {
     private readonly ILogger<PaymentAccountTransactionCreationHostedService> _logger;
     private readonly IPersistentSubscriptionService _persistentSubscriptionService;
+    private readonly IEventDeserialiser _eventDeserialiser;
     private readonly IEventPublisher _eventPublisher;
     private readonly IInboundPaymentReadModelFactory _inboundPaymentReadModelFactory;
 
@@ -23,10 +25,11 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
     private readonly string _subscriptionGroupName;
     private readonly string _subscriptionFriendlyName;
 
-    public PaymentAccountTransactionCreationHostedService(ILogger<PaymentAccountTransactionCreationHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventPublisher eventPublisher, IInboundPaymentReadModelFactory inboundPaymentReadModelFactory)
+    public PaymentAccountTransactionCreationHostedService(ILogger<PaymentAccountTransactionCreationHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventDeserialiser eventDeserialiser, IEventPublisher eventPublisher, IInboundPaymentReadModelFactory inboundPaymentReadModelFactory)
     {
         _logger = logger;
         _persistentSubscriptionService = persistentSubscriptionService;
+        _eventDeserialiser = eventDeserialiser;
         _eventPublisher = eventPublisher;
         _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
 
@@ -42,14 +45,11 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             _subscriptionGroupName,
             _subscriptionFriendlyName,
             cancellationToken,
-            (subscription, @event, json, retryCount, token) =>
+            (subscription, eventWrapper, retryCount, token) =>
             {
-                _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType} on {_subscriptionGroupName} retryCount: {retryCount}");
-                return @event.Event.EventType switch
-                {
-                    nameof(InboundPaymentAccountStatusChecked_v1) => HandleEvent(subscription, JsonSerializer.Deserialize<InboundPaymentAccountStatusChecked_v1>(json), token),
-                    _ => throw new NotImplementedException()
-                };
+                _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
+                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+                return HandleEvent(subscription, @event, token);
             });
     }
 

@@ -3,7 +3,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain;
 using EventStore.Client;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.EventStore;
@@ -14,7 +16,7 @@ public class PersistentSubscriptionService : IPersistentSubscriptionService
     private PersistentSubscription _subscription;
     private CancellationToken _cancellationToken;
 
-    private Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> _handleEventAppeared;
+    private Func<PersistentSubscription, IEventWrapper, int?, CancellationToken, Task> _handleEventAppeared;
     private string _streamName;
     private string _groupName;
     private string _subscriptionFriendlyName;
@@ -52,7 +54,7 @@ public class PersistentSubscriptionService : IPersistentSubscriptionService
         string groupName,
         string subscriptionFriendlyName,
         CancellationToken cancellationToken,
-        Func<PersistentSubscription, ResolvedEvent, string, int?, CancellationToken, Task> handleEventAppeared)
+        Func<PersistentSubscription, IEventWrapper, int?, CancellationToken, Task> handleEventAppeared)
     {
         _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
         _groupName = string.IsNullOrEmpty(groupName) ? throw new ArgumentNullException(nameof(groupName)) : groupName;
@@ -99,7 +101,8 @@ public class PersistentSubscriptionService : IPersistentSubscriptionService
 
         try
         {
-            _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), retryCount, _cancellationToken).GetAwaiter().GetResult();
+            var eventWrapper = new EventWrapper(@event);
+            _handleEventAppeared(subscription, eventWrapper, retryCount, _cancellationToken).GetAwaiter().GetResult();
             subscription.Ack(@event);
             return Task.CompletedTask;
         }

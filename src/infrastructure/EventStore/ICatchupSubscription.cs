@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain;
 using EventStore.Client;
 
 namespace Infrastructure.EventStore;
@@ -11,5 +12,5 @@ public interface ICatchupSubscription : IDisposable
         string streamName,
         string subscriptionFriendlyName,
         CancellationToken cancelationToken,
-        Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared);
+        Func<StreamSubscription, IEventWrapper, CancellationToken, Task> handleEventAppeared);
 }

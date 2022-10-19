@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Sanctions;
-using EventStore.Client;
 using Infrastructure.EventStore;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -17,12 +15,14 @@ public class SanctionsCatchupHostedService : BackgroundService, ISanctionsCatchu
 {
     private readonly ILogger<SanctionsCatchupHostedService> _logger;
     private readonly ICatchupSubscription _catchupSubscription;
+    private readonly IEventDeserialiser _eventDeserialiser;
     private readonly List<string> _sanctionedNames = new();
 
-    public SanctionsCatchupHostedService(ILogger<SanctionsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription)
+    public SanctionsCatchupHostedService(ILogger<SanctionsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription, IEventDeserialiser eventDeserialiser)
     {
         _logger = logger;
         _catchupSubscription = catchupCatchupSubscription;
+        _eventDeserialiser = eventDeserialiser;
     }
 
     public List<string> GetSanctionedNames()
@@ -33,46 +33,45 @@ public class SanctionsCatchupHostedService : BackgroundService, ISanctionsCatchu
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _catchupSubscription.StartAsync(StreamNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken,
-            (subscription, @event, json, ct) =>
+            (subscription, eventWrapper, ct) =>
             {
-                _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType}");
-                return @event.Event.EventType switch
-                {
-                    nameof(SanctionedNameAdded_v1) => HandleSanctionedNameAdded(@event, json),
-                    nameof(SanctionedNameRemoved_v1) => HandleSanctionedNameRemoved(@event, json),
-                    _ => throw new NotImplementedException()
-                };
+                _logger.LogInformation($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
+                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+
+                return Task.CompletedTask;
+                //return eventWrapper.EventTypeName switch
+                //{
+                //    nameof(SanctionedNameAdded_v1) => HandleSanctionedNameAdded(@event, json),
+                //    nameof(SanctionedNameRemoved_v1) => HandleSanctionedNameRemoved(@event, json),
+                //    _ => throw new NotImplementedException()
+                //};
             });
     }
 
-    private Task HandleSanctionedNameAdded(ResolvedEvent @event, string json)
+    private Task HandleSanctionedNameAdded(SanctionedNameAdded_v1 @event, IEventWrapper eventWrapper)
     {
-        var eventData = JsonSerializer.Deserialize<SanctionedNameAdded_v1>(json);
-
-        if (eventData is null || string.IsNullOrEmpty(eventData.SanctionedName))
+        if (@event is null || string.IsNullOrEmpty(@event.SanctionedName))
         {
-            _logger.LogWarning($"eventData is null or missing a sanctioned name to add, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
+            _logger.LogWarning($"eventData is null or missing a sanctioned name to add, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{eventWrapper.EventNumber}");
             return Task.CompletedTask;
         }
 
-        if (_sanctionedNames.All(x => x != eventData.SanctionedName))
-            _sanctionedNames.Add(eventData.SanctionedName);
+        if (_sanctionedNames.All(x => x != @event.SanctionedName))
+            _sanctionedNames.Add(@event.SanctionedName);
 
         return Task.CompletedTask;
     }
 
-    private Task HandleSanctionedNameRemoved(ResolvedEvent @event, string json)
+    private Task HandleSanctionedNameRemoved(SanctionedNameRemoved_v1 @event, IEventWrapper eventWrapper)
     {
-        var eventData = JsonSerializer.Deserialize<SanctionedNameRemoved_v1>(json);
-
-        if (eventData is null || string.IsNullOrEmpty(eventData.SanctionedName))
+        if (@event is null || string.IsNullOrEmpty(@event.SanctionedName))
         {
-            _logger.LogWarning($"eventData is null or missing a sanctioned name to remove, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
+            _logger.LogWarning($"eventData is null or missing a sanctioned name to remove, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{eventWrapper.EventNumber}");
             return Task.CompletedTask;
         }
 
-        if (_sanctionedNames.Contains(eventData.SanctionedName))
-            _sanctionedNames.Remove(eventData.SanctionedName);
+        if (_sanctionedNames.Contains(@event.SanctionedName))
+            _sanctionedNames.Remove(@event.SanctionedName);
 
         return Task.CompletedTask;
     }

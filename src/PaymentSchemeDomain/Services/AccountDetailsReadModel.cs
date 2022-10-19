@@ -38,17 +38,17 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
         var events = await _eventStreamReader.Read(
             StreamNames.Accounts.AccountDetails(SortCode, AccountNumber), Direction.Forwards, StreamPosition.Start, cancellationToken);
 
-        foreach (var @event in events)
+        foreach (var eventWrapper in events)
         {
-            _logger.LogDebug($"event read from stream #{@event.EventMetadata.EventNumber} {@event.typeName} on {_subscriptionFriendlyName}");
+            _logger.LogDebug($"event read from stream #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionFriendlyName}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            _ = @event.typeName switch
+            _ = eventWrapper.EventTypeName switch // ToDo swop switch for dynamic
             {
-                nameof(AccountOpenedEvent_v1) => HandleEvent(JsonSerializer.Deserialize<AccountOpenedEvent_v1>(@event.json, options)),
-                nameof(AccountStatusUpdated_v1) => HandleEvent(JsonSerializer.Deserialize<AccountStatusUpdated_v1>(@event.json, options)),
+                nameof(AccountOpenedEvent_v1) => HandleEvent(JsonSerializer.Deserialize<AccountOpenedEvent_v1>(eventWrapper.EventJson, options)),
+                nameof(AccountStatusUpdated_v1) => HandleEvent(JsonSerializer.Deserialize<AccountStatusUpdated_v1>(eventWrapper.EventJson, options)),
                 _ => throw new NotImplementedException()
             };
         }

@@ -65,13 +65,13 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
             StreamNames.Accounts.AccountTransactions(SortCode, AccountNumber, correlationId), Direction.Forwards,
             StreamPosition.Start, cancellationToken);
 
-        foreach (var @event in events)
+        foreach (var eventWrapper in events)
         {
-            _logger.LogDebug($"event read from stream #{@event.EventMetadata.EventNumber} {@event.typeName} on {_subscriptionFriendlyName}");
+            _logger.LogTrace($"event read from stream #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionFriendlyName}");
 
             try
             {
-                dynamic dynamicEvent = _eventDeserialiser.DeserialiseEvent(@event.typeName, @event.json);
+                dynamic dynamicEvent = _eventDeserialiser.DeserialiseEvent(eventWrapper);
                 HandleEvent(dynamicEvent);
             }
             catch (Exception e)
@@ -80,6 +80,8 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
                 throw;
             }
         }
+
+        _logger.LogDebug($"Completed reading events from stream {_subscriptionFriendlyName}");
 
         //await _catchupSubscription.StartAsync(StreamNames.Accounts.AccountTransactions(SortCode, AccountNumber, correlationId),
         //    _subscriptionFriendlyName, _cancellationTokenSource.Token, (subscription, @event, json, cancellationToken) =>

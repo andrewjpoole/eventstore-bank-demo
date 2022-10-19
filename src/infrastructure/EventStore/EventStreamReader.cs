@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain;
 using EventStore.Client;
+using Infrastructure.EventStore.Serialisation;
 
 namespace Infrastructure.EventStore;
 
@@ -15,25 +19,20 @@ public class EventStreamReader : IEventStreamReader
         _eventStoreClientFactory = eventStoreClientFactory;
     }
 
-    public async Task<IEnumerable<(string typeName, string json, EventMetadata EventMetadata)>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
+    public async Task<IEnumerable<IEventWrapper>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
     {
         await using var client = _eventStoreClientFactory.CreateClient();
 
         var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos:resolveLinkTos);
 
-        var results = new List<(string typeName, string json, EventMetadata EventMetadata)>();
+        var results = new List<EventWrapper>();
         await foreach (var @event in events)
         {
             if (cancelationToken.IsCancellationRequested)
                 return results;
-
-            var eventMetadata = new EventMetadata
-            {
-                Created = @event.OriginalEvent.Created,
-                EventId = @event.OriginalEvent.EventId.ToGuid(),
-                EventNumber = @event.OriginalEvent.EventNumber
-            };
-            results.Add((@event.OriginalEvent.EventType, Encoding.UTF8.GetString(@event.OriginalEvent.Data.ToArray()), eventMetadata));
+            
+            var wrapper = new EventWrapper(@event);
+            results.Add(wrapper);
         }
             
         return results;

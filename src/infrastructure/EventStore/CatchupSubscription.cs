@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain;
 using EventStore.Client;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.EventStore;
@@ -15,7 +16,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
     private StreamPosition _checkpoint;
     private CancellationToken _cancellationToken;
 
-    private Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> _handleEventAppeared;
+    private Func<StreamSubscription, IEventWrapper, CancellationToken, Task> _handleEventAppeared;
     private string _streamName;
     private string _subscriptionFriendlyName;
     private EventStoreClient _client;
@@ -30,7 +31,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
         string streamName, 
         string subscriptionFriendlyName, 
         CancellationToken cancelationToken, 
-        Func<StreamSubscription, ResolvedEvent, string, CancellationToken, Task> handleEventAppeared)
+        Func<StreamSubscription, IEventWrapper, CancellationToken, Task> handleEventAppeared)
     {
         _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(_streamName)) : streamName;
         _subscriptionFriendlyName = string.IsNullOrEmpty(subscriptionFriendlyName) ? throw new ArgumentNullException(nameof(subscriptionFriendlyName)) : subscriptionFriendlyName;
@@ -65,7 +66,9 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
 
         _checkpoint = @event.OriginalEventNumber;
 
-        return _handleEventAppeared(subscription, @event, Encoding.UTF8.GetString(@event.Event.Data.ToArray()), _cancellationToken);
+        var eventWrapper = new EventWrapper(@event);
+        
+        return _handleEventAppeared(subscription, eventWrapper, _cancellationToken);
     }
         
     private void SubscriptionDropped(StreamSubscription subscription, SubscriptionDroppedReason reason, Exception ex)

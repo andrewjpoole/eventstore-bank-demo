@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Domain;
+using Infrastructure.EventStore.Serialisation;
 
 namespace Infrastructure.EventStore;
 
 public interface IEventSubscription<T> where T : IEvent
 {
-    Task SubscribeToStream(string streamName, Action<T, EventMetadata> handleEventAppeared);
+    Task SubscribeToStream(string streamName, Action<T, IEventWrapper> handleEventAppeared);
 }

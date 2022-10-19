@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using Domain;
 using Domain.Events.Accounts;
-using Domain.Events.Payments;
-using EventStore.Client;
 using Infrastructure.EventStore;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -18,12 +16,14 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
 {
     private readonly ILogger<AccountsCatchupHostedService> _logger;
     private readonly ICatchupSubscription _catchupSubscription;
+    private readonly IEventDeserialiser _eventDeserialiser;
     private readonly Dictionary<Guid,AccountSummary> _accounts = new();
 
-    public AccountsCatchupHostedService(ILogger<AccountsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription)
+    public AccountsCatchupHostedService(ILogger<AccountsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription, IEventDeserialiser eventDeserialiser)
     {
         _logger = logger;
         _catchupSubscription = catchupCatchupSubscription;
+        _eventDeserialiser = eventDeserialiser;
     }
 
     public Dictionary<Guid, AccountSummary> Accounts => _accounts;
@@ -31,54 +31,42 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _catchupSubscription.StartAsync(StreamNames.Accounts.AllAccounts, "AccountsCatchupHostedService", cancellationToken,
-            (subscription, @event, json, ct) =>
+            (subscription, eventWrapper, ct) =>
             {
-                _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType}");
-                return @event.Event.EventType switch
-                {
-                    nameof(AccountOpenedEvent_v1) => HandleAccountOpenedEvent(@event, json),
-                    nameof(AccountStatusUpdated_v1) => HandleAccountStatusUpdatedEvent(@event, json),
-                    _ => Task.CompletedTask // Other accounts events we are not interested in atm
-                };
+                _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
+                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+                HandleEvent(@event, eventWrapper);
+                return Task.CompletedTask;
             });
     }
 
-    private Task HandleAccountOpenedEvent(ResolvedEvent @event, string json)
+    private void HandleEvent(AccountOpenedEvent_v1 @event, IEventWrapper eventWrapper)
     {
-        var eventData = JsonSerializer.Deserialize<AccountOpenedEvent_v1>(json);
-
-        if (eventData is null || eventData.Id == Guid.Empty)
+        if (@event is null || @event.Id == Guid.Empty)
         {
-            _logger.LogWarning($"eventData is null or missing or malformed, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
-            return Task.CompletedTask;
+            _logger.LogWarning($"eventData is null or missing or malformed, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{eventWrapper.EventNumber}");
         }
 
-        if (!_accounts.ContainsKey(eventData.Id))
-            _accounts.Add(eventData.Id, new AccountSummary
+        if (!_accounts.ContainsKey(@event.Id))
+            _accounts.Add(@event.Id, new AccountSummary
             {
-                Id = eventData.Id,
-                SortCode = eventData.SortCode,
-                AccountNumber = eventData.AccountNumber,
-                AccountName = eventData.Name,
-                Status = eventData.Status,
-                Opened = eventData.Opened
+                Id = @event.Id,
+                SortCode = @event.SortCode,
+                AccountNumber = @event.AccountNumber,
+                AccountName = @event.Name,
+                Status = @event.Status,
+                Opened = @event.Opened
             });
-
-        return Task.CompletedTask;
     }
 
-    private Task HandleAccountStatusUpdatedEvent(ResolvedEvent @event, string json)
+    private void HandleEvent(AccountStatusUpdated_v1 @event, IEventWrapper eventWrapper)
     {
-        var eventData = JsonSerializer.Deserialize<AccountStatusUpdated_v1>(json);
-
-        if (eventData is null || eventData.Id == Guid.Empty)
+        if (@event is null || @event.Id == Guid.Empty)
         {
-            _logger.LogWarning(
-                $"eventData is null or missing a sanctioned name to add, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{@event.OriginalEventNumber}");
-            return Task.CompletedTask;
+            _logger.LogWarning($"eventData is null or missing a sanctioned name to add, ignoring event {StreamNames.Sanctions.GlobalSanctionedNames}#{eventWrapper.EventNumber}");
         }
 
-        var account = _accounts[eventData.Id];
+        var account = _accounts[@event.Id];
         if (account is null)
         {
             //log
@@ -86,9 +74,7 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
         }
 
         //var accountWithNewStatus = account.WithStatus(eventData.Status);
-        var accountWithNewStatus = account.With(a => a.Status, eventData.Status);
-        _accounts[eventData.Id] = accountWithNewStatus;
-
-        return Task.CompletedTask;
+        var accountWithNewStatus = account.With(a => a.Status, @event.Status);
+        _accounts[@event.Id] = accountWithNewStatus;
     }
 }

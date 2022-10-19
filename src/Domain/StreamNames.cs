@@ -26,6 +26,7 @@ public class StreamNames
         public const string AllInboundPaymentAccountStatusChecked = "$et-InboundPaymentAccountStatusChecked_v1";
         public const string AllInboundPaymentBalanceUpdated = "$et-InboundPaymentBalanceUpdated_v1";
         public const string AllInboundPaymentHeld = "$et-InboundPaymentHeld_v1";
+        public const string AllInboundHeldPaymentReleased = "$et-InboundHeldPaymentReleased_v1";
     }        
 
     public class Sanctions

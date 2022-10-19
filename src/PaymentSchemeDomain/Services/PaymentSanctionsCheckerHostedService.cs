@@ -8,6 +8,7 @@ using Domain;
 using Domain.Events.Payments;
 using EventStore.Client;
 using Infrastructure.EventStore;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OneOf;
@@ -20,6 +21,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
 {
     private readonly ILogger<PaymentSanctionsCheckerHostedService> _logger;
     private readonly IPersistentSubscriptionService _persistentSubscriptionService;
+    private readonly IEventDeserialiser _eventDeserialiser;
     private readonly IEventPublisher _eventPublisher;
     private readonly ISanctionsApiClient _sanctionsApiClient;
     private readonly IInboundPaymentReadModelFactory _inboundPaymentReadModelFactory;
@@ -32,7 +34,8 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
 
     public PaymentSanctionsCheckerHostedService(
         ILogger<PaymentSanctionsCheckerHostedService> logger, 
-        IPersistentSubscriptionService persistentSubscriptionService, 
+        IPersistentSubscriptionService persistentSubscriptionService,
+        IEventDeserialiser eventDeserialiser,
         IEventPublisher eventPublisher, 
         ISanctionsApiClient sanctionsApiClient, 
         IInboundPaymentReadModelFactory inboundPaymentReadModelFactory,
@@ -40,6 +43,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
     {
         _logger = logger;
         _persistentSubscriptionService = persistentSubscriptionService;
+        _eventDeserialiser = eventDeserialiser;
         _eventPublisher = eventPublisher;
         _sanctionsApiClient = sanctionsApiClient;
         _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
@@ -57,14 +61,11 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
             _subscriptionGroupName,
             _subscriptionFriendlyName,
             cancellationToken,
-            (subscription, @event, json, retryCount, token) =>
+            (subscription, eventWrapper, retryCount, token) =>
             {
-                _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType} on {_subscriptionGroupName} retryCount: {retryCount}");
-                return @event.Event.EventType switch
-                {
-                    nameof(InboundPaymentValidated_v1) => HandleEvent(subscription, JsonSerializer.Deserialize<InboundPaymentValidated_v1>(json), token),
-                    _ => throw new NotImplementedException()
-                };
+                _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
+                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+                return HandleEvent(subscription, @event, token);
             });
     }
 

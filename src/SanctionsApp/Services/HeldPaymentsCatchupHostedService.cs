@@ -31,13 +31,13 @@ public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPayments
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _catchupSubscription.StartAsync(StreamNames.Accounts.AllAccounts, "HeldPaymentsCatchupHostedService", cancellationToken,
-            (subscription, @event, json, ct) =>
+            (subscription, eventWrapper, ct) =>
             {
-                _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType}");
-                dynamic typedEvent = _eventDeserialiser.DeserialiseEvent(@event.Event.EventType, json);
+                _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
+                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
                 try
                 {
-                    HandleEvent(typedEvent);
+                    HandleEvent(@event);
                 }
                 catch (RuntimeBinderException e)
                 {

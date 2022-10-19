@@ -13,14 +13,22 @@ public class EventDeserialiser : IEventDeserialiser
         _typeMapper = typeMapper;
     }
 
-    public IEvent DeserialiseEvent(string typeName, string json)
+    public IEvent DeserialiseEvent(string typeName, string version, string json)
     {
-        var type = _typeMapper.GetTypeFromName(typeName);
+        // pass in the version from the event metadata and construct the typename inc '_'
+        var typeNameWithVersion = $"{typeName}_{version}";
+
+        var type = _typeMapper.GetTypeFromName(typeNameWithVersion);
 
         var @event = JsonSerializer.Deserialize(json, type,
                          new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ??
-                     throw new InvalidOperationException($"Can't Deserialise type {typeName}");
+                     throw new InvalidOperationException($"Can't Deserialise type {typeNameWithVersion}");
 
         return (IEvent)@event;
+    }
+
+    public IEvent DeserialiseEvent(IEventWrapper eventWrapper)
+    {
+        return DeserialiseEvent(eventWrapper.EventTypeName, eventWrapper.Version, eventWrapper.EventJson);
     }
 }

@@ -14,7 +14,5 @@ class Program
 
         var persistentSubscriptionSeeder = new PersistentSubscriptionsSeeder();
         persistentSubscriptionSeeder.Seed();
-
-        // TODO add user projections - $projections-SanctionedPayments
     }
 }
