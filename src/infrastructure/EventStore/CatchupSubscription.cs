@@ -50,7 +50,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
     {
         _logger.LogDebug($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribing to {_streamName}...");
             
-        _subscription = await _client.SubscribeToStreamAsync(_streamName, _checkpoint, EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
+        _subscription = await _client.SubscribeToStreamAsync(_streamName, FromStream.After(_checkpoint), EventAppeared, true, SubscriptionDropped, cancellationToken:_cancellationToken);
             
         _logger.LogInformation($"{nameof(CatchupSubscription)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
     }

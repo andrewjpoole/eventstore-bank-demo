@@ -15,13 +15,16 @@ namespace sanctions_api.Services;
 
 public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPaymentsCatchupHostedService
 {
-    private readonly ILogger<SanctionsCatchupHostedService> _logger;
+    private readonly ILogger<SanctionedNamesCatchupHostedService> _logger;
     private readonly ICatchupSubscription _catchupSubscription;
     private readonly IEventDeserialiser _eventDeserialiser;
 
     private readonly Dictionary<string, HeldPayment> _heldPayments = new();
 
-    public HeldPaymentsCatchupHostedService(ILogger<SanctionsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription, IEventDeserialiser eventDeserialiser)
+    public HeldPaymentsCatchupHostedService(
+        ILogger<SanctionedNamesCatchupHostedService> logger, 
+        ICatchupSubscription catchupCatchupSubscription, 
+        IEventDeserialiser eventDeserialiser)
     {
         _logger = logger;
         _catchupSubscription = catchupCatchupSubscription;

@@ -34,6 +34,6 @@ public class PersistentSubscriptionFactory
     public void Create(string streamName, string groupName, PersistentSubscriptionSettings settings = null)
     {
         settings ??= new PersistentSubscriptionSettings();
-        client.CreateAsync(streamName, groupName, settings, credentials).GetAwaiter().GetResult();
+        client.CreateAsync(streamName, groupName, settings, null, credentials).GetAwaiter().GetResult();
     }
 }

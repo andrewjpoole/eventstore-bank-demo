@@ -11,14 +11,14 @@ using Microsoft.Extensions.Logging;
 
 namespace sanctions_api.Services;
 
-public class SanctionsCatchupHostedService : BackgroundService, ISanctionsCatchupHostedService
+public class SanctionedNamesCatchupHostedService : BackgroundService, ISanctionedNamesCatchupHostedService
 {
-    private readonly ILogger<SanctionsCatchupHostedService> _logger;
+    private readonly ILogger<SanctionedNamesCatchupHostedService> _logger;
     private readonly ICatchupSubscription _catchupSubscription;
     private readonly IEventDeserialiser _eventDeserialiser;
     private readonly List<string> _sanctionedNames = new();
 
-    public SanctionsCatchupHostedService(ILogger<SanctionsCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription, IEventDeserialiser eventDeserialiser)
+    public SanctionedNamesCatchupHostedService(ILogger<SanctionedNamesCatchupHostedService> logger, ICatchupSubscription catchupCatchupSubscription, IEventDeserialiser eventDeserialiser)
     {
         _logger = logger;
         _catchupSubscription = catchupCatchupSubscription;
@@ -32,23 +32,17 @@ public class SanctionsCatchupHostedService : BackgroundService, ISanctionsCatchu
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return _catchupSubscription.StartAsync(StreamNames.Sanctions.GlobalSanctionedNames, "SanctionsCatchupHostedService", cancellationToken,
+        return _catchupSubscription.StartAsync(StreamNames.Sanctions.GlobalSanctionedNames, "SanctionedNamesCatchupHostedService", cancellationToken,
             (subscription, eventWrapper, ct) =>
             {
                 _logger.LogInformation($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-
+                HandleEvent(@event, eventWrapper);
                 return Task.CompletedTask;
-                //return eventWrapper.EventTypeName switch
-                //{
-                //    nameof(SanctionedNameAdded_v1) => HandleSanctionedNameAdded(@event, json),
-                //    nameof(SanctionedNameRemoved_v1) => HandleSanctionedNameRemoved(@event, json),
-                //    _ => throw new NotImplementedException()
-                //};
             });
     }
 
-    private Task HandleSanctionedNameAdded(SanctionedNameAdded_v1 @event, IEventWrapper eventWrapper)
+    private Task HandleEvent(SanctionedNameAdded_v1 @event, IEventWrapper eventWrapper)
     {
         if (@event is null || string.IsNullOrEmpty(@event.SanctionedName))
         {
@@ -62,7 +56,7 @@ public class SanctionsCatchupHostedService : BackgroundService, ISanctionsCatchu
         return Task.CompletedTask;
     }
 
-    private Task HandleSanctionedNameRemoved(SanctionedNameRemoved_v1 @event, IEventWrapper eventWrapper)
+    private Task HandleEvent(SanctionedNameRemoved_v1 @event, IEventWrapper eventWrapper)
     {
         if (@event is null || string.IsNullOrEmpty(@event.SanctionedName))
         {

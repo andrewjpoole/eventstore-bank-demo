@@ -10,7 +10,7 @@ public class StreamNames
     {
         public static string AccountDetails(int sortCode, int accountNumber) => $"Account-{sortCode}-{accountNumber}-Details";
 
-        public const string AllAccountsOpened = "$et-AccountOpenedEvent_v1";
+        public const string AllAccountsOpened = "$et-AccountOpenedEvent";
         public const string AllAccounts = "$ce-Account"; // category for stream's starting with 'Account' Category projection will create category streams for everything in the Stream name up to the first '-'
         
         public static string AccountTransactions(int sortCode, int accountNumber, Guid correlationId) => $"Account-{sortCode}-{accountNumber}-Transactions-{correlationId}";
@@ -20,13 +20,13 @@ public class StreamNames
 
     public class PaymentProcessing
     {
-        public const string AllInboundPaymentReceived = "$et-InboundPaymentReceived_v1";
-        public const string AllInboundPaymentValidated = "$et-InboundPaymentValidated_v1";
-        public const string AllInboundPaymentSanctionsChecked = "$et-InboundPaymentSanctionsChecked_v1";
-        public const string AllInboundPaymentAccountStatusChecked = "$et-InboundPaymentAccountStatusChecked_v1";
-        public const string AllInboundPaymentBalanceUpdated = "$et-InboundPaymentBalanceUpdated_v1";
-        public const string AllInboundPaymentHeld = "$et-InboundPaymentHeld_v1";
-        public const string AllInboundHeldPaymentReleased = "$et-InboundHeldPaymentReleased_v1";
+        public const string AllInboundPaymentReceived = "$et-InboundPaymentReceived";
+        public const string AllInboundPaymentValidated = "$et-InboundPaymentValidated";
+        public const string AllInboundPaymentSanctionsChecked = "$et-InboundPaymentSanctionsChecked";
+        public const string AllInboundPaymentAccountStatusChecked = "$et-InboundPaymentAccountStatusChecked";
+        public const string AllInboundPaymentBalanceUpdated = "$et-InboundPaymentBalanceUpdated";
+        public const string AllInboundPaymentHeld = "$et-InboundPaymentHeld";
+        public const string AllInboundHeldPaymentReleased = "$et-InboundHeldPaymentReleased";
     }        
 
     public class Sanctions

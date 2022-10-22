@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading;
 using Domain;
 using EventStore.Client;
 
@@ -13,37 +15,42 @@ public class EventWrapper : IEventWrapper
     public DateTime Created { get; init; }
     public Guid EventId { get; init; }
     public long EventNumber { get; init; }
-    public string Version {
-        get
-        {
-            metadataDynamic ??= JsonSerializer.Deserialize<dynamic>(metadataJson)
-                                ?? throw new InvalidOperationException("Unable to load a dynamic from the metadata Json, please ensure its valid Json.");
+    public string Version { get; init; }
 
-            return metadataDynamic.Version;
-        }
-    }
-    public dynamic Metadata {
-        get
-        {
-            metadataDynamic ??= JsonSerializer.Deserialize<dynamic>(metadataJson)
-                                ?? throw new InvalidOperationException("Unable to load a dynamic from the metadata Json, please ensure its valid Json.");
+    public dynamic Metadata => _metadata;
 
-            return metadataDynamic;
-        }
-    }
+    private readonly JsonElement _metadata;
 
-    private readonly string metadataJson;
-    private dynamic metadataDynamic;
-
-    public EventWrapper(ResolvedEvent @event)
+    public EventWrapper(ResolvedEvent resolvedEvent)
     {
-        metadataJson = Encoding.UTF8.GetString(@event.OriginalEvent.Metadata.ToArray());
+        var @event = resolvedEvent.Event; // this seems to be the real event whether it is resolved or not
 
-        Created = @event.Event.Created;
-        EventId = @event.OriginalEvent.EventId.ToGuid();
-        EventNumber = @event.OriginalEvent.EventNumber.ToInt64();
+        var metadataJson = Encoding.UTF8.GetString(@event.Metadata.ToArray());
+        _metadata = JsonSerializer.Deserialize<JsonElement>(metadataJson);
         
-        EventJson = Encoding.UTF8.GetString(@event.OriginalEvent.Data.ToArray());
-        EventTypeName = @event.OriginalEvent.EventType;
+        Version = _metadata.GetProperty("Version").GetString();
+
+        Created = @event.Created;
+        EventId = @event.EventId.ToGuid();
+        EventNumber = @event.EventNumber.ToInt64();
+        
+        EventJson = Encoding.UTF8.GetString(@event.Data.ToArray());
+        EventTypeName = @event.EventType;
+
+        if (EventTypeName == "$>")
+            throw new InvalidOperationException("Deserialisation will fail as the typename is $> for linked events");
+    }
+}
+
+public static class EventExtensions
+{
+    public static string ToJson(this EventRecord @event)
+    {
+        return Encoding.UTF8.GetString(@event.Data.ToArray());
+    }
+
+    public static string ToMetadataJson(this EventRecord @event)
+    {
+        return Encoding.UTF8.GetString(@event.Metadata.ToArray());
     }
 }

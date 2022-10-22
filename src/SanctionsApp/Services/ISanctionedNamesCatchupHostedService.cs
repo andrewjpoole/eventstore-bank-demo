@@ -2,7 +2,7 @@
 
 namespace sanctions_api.Services;
 
-public interface ISanctionsCatchupHostedService
+public interface ISanctionedNamesCatchupHostedService
 {
     List<string> GetSanctionedNames();
 }

@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AJP.JsonElementExtensions" Version="1.6.0" />
-    <PackageReference Include="AJP.MediatrEndpoints" Version="1.2.0" />
-    <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="21.2.0" />
-    <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="21.2.0" />
-    <PackageReference Include="EventStore.Client.Grpc.Streams" Version="21.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="AJP.JsonElementExtensions" Version="1.7.0" />
+    <PackageReference Include="AJP.MediatrEndpoints" Version="1.4.0" />
+    <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="22.0.0" />
+    <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="22.0.0" />
+    <PackageReference Include="EventStore.Client.Grpc.Streams" Version="22.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>

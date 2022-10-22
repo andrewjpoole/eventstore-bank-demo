@@ -79,8 +79,8 @@ public class PersistentSubscriptionService : IPersistentSubscriptionService
 
         try
         {
-            _subscription = await _persistentSubscriptionsClient.SubscribeAsync(_streamName, _groupName, EventAppeared,
-                SubscriptionDropped, autoAck: false, bufferSize: 10, cancellationToken: _cancellationToken);
+            _subscription = await _persistentSubscriptionsClient.SubscribeToStreamAsync(_streamName, _groupName, EventAppeared,
+                SubscriptionDropped, bufferSize: 10, cancellationToken: _cancellationToken);
 
             _logger.LogInformation($"{nameof(PersistentSubscriptionService)}:{_subscriptionFriendlyName} subscribed to {_streamName}");
         }

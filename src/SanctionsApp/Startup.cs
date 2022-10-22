@@ -50,12 +50,6 @@ public class Startup
         services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
         services.AddTransient<IEventPublisher, EventPublisher>();
         services.AddTransient<ICatchupSubscription, CatchupSubscription>();
-        services.AddSingleton<ISanctionsCatchupHostedService, SanctionsCatchupHostedService>();
-        services.AddHostedService(sp => (SanctionsCatchupHostedService)sp.GetService<ISanctionsCatchupHostedService>());
-
-        services.AddTransient<IInboundPaymentReadModel, InboundPaymentReadModel>();
-        services.AddSingleton<IHeldPaymentsCatchupHostedService, HeldPaymentsCatchupHostedService>();
-        services.AddHostedService(provider => (HeldPaymentsCatchupHostedService)provider.GetService<IHeldPaymentsCatchupHostedService>());
         services.AddTransient<IEventStreamReader, EventStreamReader>();
 
         services.AddSingleton<IEventDeserialiser, EventDeserialiser>();
@@ -65,6 +59,14 @@ public class Startup
             typeMapper.AddTypesFromAssembly(typeof(IEvent).Assembly);
             return typeMapper;
         });
+
+        services.AddSingleton<ISanctionedNamesCatchupHostedService, SanctionedNamesCatchupHostedService>();
+        services.AddHostedService(sp => (SanctionedNamesCatchupHostedService)sp.GetService<ISanctionedNamesCatchupHostedService>());
+
+        services.AddSingleton<IHeldPaymentsCatchupHostedService, HeldPaymentsCatchupHostedService>();
+        services.AddHostedService(sp => (HeldPaymentsCatchupHostedService)sp.GetService<IHeldPaymentsCatchupHostedService>());
+
+        services.AddTransient<IInboundPaymentReadModel, InboundPaymentReadModel>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

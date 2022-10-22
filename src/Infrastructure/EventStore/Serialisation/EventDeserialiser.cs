@@ -16,7 +16,7 @@ public class EventDeserialiser : IEventDeserialiser
     public IEvent DeserialiseEvent(string typeName, string version, string json)
     {
         // pass in the version from the event metadata and construct the typename inc '_'
-        var typeNameWithVersion = $"{typeName}_{version}";
+        var typeNameWithVersion = $"{typeName}{version}";
 
         var type = _typeMapper.GetTypeFromName(typeNameWithVersion);
 

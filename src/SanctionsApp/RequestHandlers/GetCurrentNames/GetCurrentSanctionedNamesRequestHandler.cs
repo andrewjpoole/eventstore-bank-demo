@@ -7,9 +7,9 @@ namespace sanctions_api.RequestHandlers.GetCurrentNames;
 
 public class GetCurrentSanctionedNamesRequestHandler : IRequestHandler<GetCurrentSanctionedNamesRequest, CurrentSanctionedNamesResponse>
 {
-    private readonly ISanctionsCatchupHostedService _sanctionedNamesSubscriptionHostedService;
+    private readonly ISanctionedNamesCatchupHostedService _sanctionedNamesSubscriptionHostedService;
 
-    public GetCurrentSanctionedNamesRequestHandler(ISanctionsCatchupHostedService sanctionedNamesSubscriptionHostedService)
+    public GetCurrentSanctionedNamesRequestHandler(ISanctionedNamesCatchupHostedService sanctionedNamesSubscriptionHostedService)
     {
         _sanctionedNamesSubscriptionHostedService = sanctionedNamesSubscriptionHostedService;
     }

@@ -8,9 +8,9 @@ namespace sanctions_api.RequestHandlers.CheckName;
 
 public class CheckNameRequestHandler : IRequestHandler<CheckNameRequest, CheckNameResponse>
 {
-    private readonly ISanctionsCatchupHostedService _sanctionedNamesSubscriptionHostedService;
+    private readonly ISanctionedNamesCatchupHostedService _sanctionedNamesSubscriptionHostedService;
 
-    public CheckNameRequestHandler(ISanctionsCatchupHostedService sanctionedNamesSubscriptionHostedService)
+    public CheckNameRequestHandler(ISanctionedNamesCatchupHostedService sanctionedNamesSubscriptionHostedService)
     {
         _sanctionedNamesSubscriptionHostedService = sanctionedNamesSubscriptionHostedService;
     }
