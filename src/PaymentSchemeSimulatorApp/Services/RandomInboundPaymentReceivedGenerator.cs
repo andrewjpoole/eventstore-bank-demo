@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using Domain.Events.Payments;
+// ReSharper disable InconsistentNaming
+#pragma warning disable IDE1006 // Naming Styles
 
 namespace payment_scheme_simulator.Services;
 
@@ -34,9 +36,9 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
         var @event = new InboundPaymentReceived_v1
         {
             CorrelationId = Guid.NewGuid(),
-            PaymentId = $"SimulatedRandomPayment{Guid.NewGuid()}",
+            PaymentId = Guid.NewGuid(),
             Amount = decimal.Parse($"{random.Next(1, 1_000_000)}.{random.Next(0, 99)}"),
-            PaymentReference = $"Simulated inbound payment {Guid.NewGuid().ToString().Substring(0, 6)}",
+            PaymentReference = $"Simulated inbound payment {Guid.NewGuid().ToString()[..6]}",
             ProcessingDate = DateTime.Now.Date,
             Scheme = scheme,
             Type = type,
@@ -63,16 +65,18 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
         var existingAccounts = await _accountsApiClient.GetAccountSummaries();
         var existingAccountList = existingAccounts.ToList();
 
-        var randomIndex = random.Next(0, existingAccountList.Count() - 1);
+        var randomIndex = random.Next(0, existingAccountList.Count - 1);
         var existingAccount = existingAccountList[randomIndex];
         return (existingAccount.AccountName, existingAccount.SortCode, existingAccount.AccountNumber);
     }
 
-    private async Task<(string Name, int SortCode, int AccountNumber)> GetRandomExternalAccountDetails(Random random)
+    private static async Task<(string Name, int SortCode, int AccountNumber)> GetRandomExternalAccountDetails(Random random)
     {
         string name;
-        var client = new HttpClient();
-        client.BaseAddress = new Uri("https://randomuser.me");
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri("https://randomuser.me")
+        };
         var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/api/?nat=gb"));
         if (response.IsSuccessStatusCode)
         {

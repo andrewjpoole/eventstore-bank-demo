@@ -24,7 +24,7 @@ public class SimulateRandomInboundPaymentRequestHandler : IRequestHandler<Simula
             
         var @event = await _randomInboundPaymentReceivedGenerator.Generate(PaymentScheme.Bacs, PaymentType.Credit, request.SimulateSanctionedPayment);
 
-        var result = await _eventPublisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
+        await _eventPublisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
 
         return new SimulatedInboundPaymentResponse
         {

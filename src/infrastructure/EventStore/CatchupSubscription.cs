@@ -33,7 +33,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
         CancellationToken cancelationToken, 
         Func<StreamSubscription, IEventWrapper, CancellationToken, Task> handleEventAppeared)
     {
-        _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(_streamName)) : streamName;
+        _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
         _subscriptionFriendlyName = string.IsNullOrEmpty(subscriptionFriendlyName) ? throw new ArgumentNullException(nameof(subscriptionFriendlyName)) : subscriptionFriendlyName;
         _handleEventAppeared = handleEventAppeared ?? throw new ArgumentNullException(nameof(handleEventAppeared));
 

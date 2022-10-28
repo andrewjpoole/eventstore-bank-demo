@@ -32,7 +32,7 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
         _eventPublisher = eventPublisher;
         _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
 
-        _streamName = StreamNames.PaymentProcessing.AllInboundPaymentAccountStatusChecked;
+        _streamName = StreamNames.Payments.AllInboundPaymentAccountStatusChecked;
         _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-account-status-checked";
     }
@@ -52,9 +52,9 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(PersistentSubscription _, InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
     {
-        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
+        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentAccountStatusChecked_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
             
         var transactionId = Guid.NewGuid(); // replace this with a call to accounts to create the transaction etc
 

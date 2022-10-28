@@ -5,8 +5,8 @@ namespace payment_scheme_simulator.RequestHandlers;
 
 public class SimulatedInboundPaymentResponse
 {
+    public Guid PaymentId { get; init; }
     public Guid CorrelationId { get; init; }
-    public string PaymentId { get; init; }
     public int OriginatingSortCode { get; init; }
     public int OriginatingAccountNumber { get; init; }
     public string OriginatingAccountName { get; set; }

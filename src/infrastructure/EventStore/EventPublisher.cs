@@ -33,9 +33,13 @@ public class EventPublisher : IEventPublisher
         return (typeNameWithoutVersion, version);
     }
 
-    public async Task<bool> Publish<T>(T data, string streamName, CancellationToken cancellationToken)
+    public async Task<bool> Publish<T>(T data, string streamName, CancellationToken cancellationToken) where T : IEvent
     {
         _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
+
+        var isValid = data.IsValid();
+        if (isValid.IsT0)
+            throw new InvalidOperationException($"Can't publish an invalid event. Type:{typeof(T).Name}, Errors:{string.Join(",", isValid.AsT1)}");
 
         var (typeNameWithoutVersion, version) = GetNameAndVersion(typeof(T));
 
@@ -54,9 +58,13 @@ public class EventPublisher : IEventPublisher
         return true;
     }
 
-    public async Task<bool> Publish<T>(T data, string streamName, StreamRevision streamRevision, CancellationToken cancellationToken)
+    public async Task<bool> Publish<T>(T data, string streamName, StreamRevision streamRevision, CancellationToken cancellationToken) where T : IEvent
     {
         _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
+
+        var isValid = data.IsValid();
+        if (isValid.IsT0)
+            throw new InvalidOperationException($"Can't publish an invalid event. Type:{typeof(T).Name}, Errors:{string.Join(",", isValid.AsT1)}");
 
         var (typeNameWithoutVersion, version) = GetNameAndVersion(typeof(T));
 

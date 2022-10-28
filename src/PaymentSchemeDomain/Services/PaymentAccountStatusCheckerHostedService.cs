@@ -29,7 +29,7 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
         _eventPublisher = eventPublisher;
         _eventDeserialiser = eventDeserialiser;
 
-        _streamName = StreamNames.PaymentProcessing.AllInboundPaymentSanctionsChecked;
+        _streamName = StreamNames.Payments.AllInboundPaymentSanctionsChecked;
         _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-sanctions-checked";
     }

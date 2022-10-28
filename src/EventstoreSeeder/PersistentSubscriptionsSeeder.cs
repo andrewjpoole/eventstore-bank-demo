@@ -12,10 +12,10 @@ public class PersistentSubscriptionsSeeder
             resolveLinkTos: true,
             startFrom: StreamPosition.Start);
             
-        persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentReceived, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentReceived), settings);
-        persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentValidated, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentValidated), settings);
-        persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentSanctionsChecked, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentSanctionsChecked), settings);
-        persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentAccountStatusChecked, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentAccountStatusChecked), settings);
-        persistentSubscriptionFactory.Create(StreamNames.PaymentProcessing.AllInboundPaymentBalanceUpdated, StreamNames.SubscriptionGroupName(StreamNames.PaymentProcessing.AllInboundPaymentBalanceUpdated), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentReceived, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentReceived), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentValidated, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentValidated), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentSanctionsChecked, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentSanctionsChecked), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentAccountStatusChecked, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentAccountStatusChecked), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentBalanceUpdated, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentBalanceUpdated), settings);
     }
 }

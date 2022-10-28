@@ -8,7 +8,7 @@ namespace Domain.Events.Payments;
 // Initial unvalidated payment event
 public class InboundPaymentReceived_v1 : IEvent
 {
-    public string PaymentId { get; set; }
+    public Guid PaymentId { get; set; }
     public int OriginatingSortCode { get; init; }
     public int OriginatingAccountNumber { get; init; }
     public string OriginatingAccountName { get; set; }
@@ -31,6 +31,7 @@ public class InboundPaymentReceived_v1 : IEvent
 
     public OneOf<True, List<string>> IsValid() => new True();
 
-    public string StreamName() => StreamNames.Accounts.AccountTransactions(DestinationSortCode, DestinationAccountNumber, CorrelationId);
+    public static PaymentDirection Direction => PaymentDirection.Inbound;
+    public string StreamName() => StreamNames.Payments.AccountPayments(Direction, DestinationSortCode, DestinationAccountNumber, PaymentId);
     public int Version() => 1;
 }

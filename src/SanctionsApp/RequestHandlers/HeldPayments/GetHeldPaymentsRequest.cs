@@ -47,7 +47,7 @@ namespace sanctions_api.RequestHandlers.HeldPayments
 
     public class ReleaseHeldPaymentRequest : IRequest<ReleaseHeldPaymentResponse>
     {
-        public string PaymentId { get; init; }
+        public Guid PaymentId { get; init; }
         public string ReleasedBy { get; init; }
         public string ReleasedReason { get; init; }
         public Guid HeldPaymentReleaseToken { get; init; }
@@ -55,9 +55,6 @@ namespace sanctions_api.RequestHandlers.HeldPayments
         public OneOf<True, List<string>> IsValid()
         {
             var validationErrors = new List<string>();
-            if(string.IsNullOrEmpty(PaymentId))
-                validationErrors.Add("PaymentId is required");
-
             if (string.IsNullOrEmpty(ReleasedBy))
                 validationErrors.Add("ReleasedBy is required");
 

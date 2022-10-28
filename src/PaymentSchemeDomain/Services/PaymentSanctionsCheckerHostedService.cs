@@ -47,7 +47,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
         _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
         _accountDetailsReadModelFactory = accountDetailsReadModelFactory;
 
-        _streamName = StreamNames.PaymentProcessing.AllInboundPaymentValidated;
+        _streamName = StreamNames.Payments.AllInboundPaymentValidated;
         _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-validated";
     }
@@ -67,9 +67,9 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(PersistentSubscription _, InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
     {
-        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
+        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentValidated_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
         var accountDetailsReadModel = await _accountDetailsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, cancellationToken);
 
         // check all possible names ToDo use System.Reactive to kick these off and wait, stop if one returns true.

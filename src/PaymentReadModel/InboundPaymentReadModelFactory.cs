@@ -1,4 +1,6 @@
-﻿namespace PaymentReadModel;
+﻿using Domain.Events.Payments;
+
+namespace PaymentReadModel;
 
 public class InboundPaymentReadModelFactory : IInboundPaymentReadModelFactory
 {
@@ -9,12 +11,12 @@ public class InboundPaymentReadModelFactory : IInboundPaymentReadModelFactory
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IInboundPaymentReadModel> Create(int sortCode, int accountNumber, Guid correlationId, CancellationToken cancellationToken)
+    public async Task<IInboundPaymentReadModel> Create(PaymentDirection paymentDirection, int sortCode, int accountNumber, Guid correlationId, CancellationToken cancellationToken)
     {
-        if (!(_serviceProvider.GetService(typeof(IInboundPaymentReadModel)) is IInboundPaymentReadModel inboundPaymentReadModel))
+        if (_serviceProvider.GetService(typeof(IInboundPaymentReadModel)) is not IInboundPaymentReadModel inboundPaymentReadModel)
             throw new ApplicationException("Couldn't retrieve an instance of InboundPaymentReadModel from the ServiceProvider");
 
-        await inboundPaymentReadModel.Read(sortCode, accountNumber, correlationId, cancellationToken);
+        await inboundPaymentReadModel.Read(paymentDirection, sortCode, accountNumber, correlationId, cancellationToken);
         return inboundPaymentReadModel;
     }
 }

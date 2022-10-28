@@ -20,7 +20,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
 
     public int SortCode { get; private set; }
     public int AccountNumber { get; private set; }
-    public string PaymentId { get; private set; }
+    public Guid PaymentId { get; private set; }
     public Guid CorrelationId { get; private set; }
 
     public int OriginatingSortCode { get; private set; }
@@ -51,18 +51,17 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
         //_catchupSubscription = catchupSubscription;
     }
 
-    public async Task Read(int sortCode, int accountNumber, Guid correlationId, CancellationToken cancellationToken)
+    public async Task Read(PaymentDirection paymentDirection, int sortCode, int accountNumber, Guid paymentId, CancellationToken cancellationToken)
     {
         SortCode = sortCode;
         AccountNumber = accountNumber;
-        CorrelationId = correlationId;
 
         _subscriptionFriendlyName = $"InboundPaymentReadModel-{SortCode}-{AccountNumber}";
 
         _cancellationTokenSource = new CancellationTokenSource();
 
         var events = await _eventStreamReader.Read(
-            StreamNames.Accounts.AccountTransactions(SortCode, AccountNumber, correlationId), Direction.Forwards,
+            StreamNames.Payments.AccountPayments(paymentDirection, SortCode, AccountNumber, paymentId), Direction.Forwards,
             StreamPosition.Start, cancellationToken);
 
         foreach (var eventWrapper in events)
@@ -108,19 +107,19 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
         return Task.CompletedTask;
     }
 
-    private Task HandleEvent(InboundPaymentValidated_v1 eventData)
+    private Task HandleEvent(InboundPaymentValidated_v1 _)
     {
         PaymentValidated = true;
         return Task.CompletedTask;
     }
 
-    private Task HandleEvent(InboundPaymentSanctionsChecked_v1 eventData)
+    private Task HandleEvent(InboundPaymentSanctionsChecked_v1 _)
     {
         PassedSanctionsCheck = true;
         return Task.CompletedTask;
     }
 
-    private Task HandleEvent(InboundPaymentAccountStatusChecked_v1 eventData)
+    private Task HandleEvent(InboundPaymentAccountStatusChecked_v1 _)
     {
         PassedAccountStatusCheck = true;
         return Task.CompletedTask;
@@ -133,7 +132,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
         return Task.CompletedTask;
     }
 
-    private Task HandleEvent(InboundPaymentHeld_v1 eventData)
+    private Task HandleEvent(InboundPaymentHeld_v1 _)
     {
         PaymentHasBeenHeld = true;
         PaymentIsHeld = true;

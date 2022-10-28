@@ -29,7 +29,7 @@ public class SimulateInboundPaymentRequestHandler : IRequestHandler<SimulateInbo
         var @event = new InboundPaymentReceived_v1
         {
             CorrelationId = new Guid(),
-            PaymentId = request.PaymentId ?? $"SimulatedManualPayment{Guid.NewGuid()}",
+            PaymentId = request.PaymentId,
             Amount = request.Amount != 0 ? request.Amount : randomEvent.Amount,
             OriginatingAccountName = request.OriginatingAccountName ?? randomEvent.OriginatingAccountName,
             OriginatingAccountNumber = request.OriginatingAccountNumber != 0 ? request.OriginatingAccountNumber : randomEvent.OriginatingAccountNumber,
@@ -44,7 +44,7 @@ public class SimulateInboundPaymentRequestHandler : IRequestHandler<SimulateInbo
                 
         };
 
-        var result = await _eventPublisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
+        await _eventPublisher.Publish(@event, @event.StreamName(), cancellationTokenSource.Token);
 
         return new SimulatedInboundPaymentResponse
         {

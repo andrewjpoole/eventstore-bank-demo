@@ -6,7 +6,7 @@ public interface IInboundPaymentReadModel
 {
     int SortCode { get; }
     int AccountNumber { get; }
-    string PaymentId { get; }
+    Guid PaymentId { get; }
     Guid CorrelationId { get; }
     int OriginatingSortCode { get; }
     int OriginatingAccountNumber { get; }
@@ -22,5 +22,5 @@ public interface IInboundPaymentReadModel
     bool PassedAccountStatusCheck { get; }
     bool FundsCleared { get; }
     Guid ClearedTransactionId { get; }
-    Task Read(int sortCode, int accountNumber, Guid correlationId, CancellationToken cancellationToken);
+    Task Read(PaymentDirection paymentDirection, int sortCode, int accountNumber, Guid paymentId, CancellationToken cancellationToken);
 }

@@ -19,7 +19,7 @@ public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPayments
     private readonly ICatchupSubscription _catchupSubscription;
     private readonly IEventDeserialiser _eventDeserialiser;
 
-    private readonly Dictionary<string, HeldPayment> _heldPayments = new();
+    private readonly Dictionary<Guid, HeldPayment> _heldPayments = new();
 
     public HeldPaymentsCatchupHostedService(
         ILogger<SanctionedNamesCatchupHostedService> logger, 

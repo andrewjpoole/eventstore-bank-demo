@@ -7,8 +7,8 @@ namespace Domain.Events.Payments;
 
 public class InboundPaymentHeld_v1 : IEvent
 {
+    public Guid PaymentId { get; init; }
     public string Reason { get; init; }
-    public string PaymentId { get; init; }
     public Guid CorrelationId { get; init; }
     public int OriginatingSortCode { get; init; }
     public int OriginatingAccountNumber { get; init; }
@@ -21,7 +21,8 @@ public class InboundPaymentHeld_v1 : IEvent
     public PaymentScheme Scheme { get; init; }
     public PaymentType Type { get; init; }
     public DateTime ProcessingDate { get; init; }
-    public string StreamName() => StreamNames.Accounts.AccountTransactionsSanctions(DestinationSortCode, DestinationAccountNumber, CorrelationId);
+    public static PaymentDirection Direction => PaymentDirection.Inbound;
+    public string StreamName() => StreamNames.Payments.AccountPayments(Direction, DestinationSortCode, DestinationAccountNumber, PaymentId);
     public int Version() => 1;
     public OneOf<True, List<string>> IsValid() => new True();
 }
@@ -29,7 +30,7 @@ public class InboundPaymentHeld_v1 : IEvent
 public class HeldPayment
 {
     public string Reason { get; init; }
-    public string PaymentId { get; init; }
+    public Guid PaymentId { get; init; }
     public Guid CorrelationId { get; init; }
     public int OriginatingSortCode { get; init; }
     public int OriginatingAccountNumber { get; init; }
@@ -61,14 +62,14 @@ public class HeldPayment
 
 public class InboundHeldPaymentReleased_v1 : IEvent
 {
-    public string PaymentId { get; init; }
+    public Guid PaymentId { get; init; }
+    public Guid CorrelationId { get; init; }
     public string ReleasedReason { get; init; }
     public string ReleasedBy { get; init; }
     public DateTime ReleasedAt { get; init; }
-    public Guid CorrelationId { get; init; }
     public int DestinationSortCode { get; init; }
     public int DestinationAccountNumber { get; init; }
-    public string StreamName() => StreamNames.Accounts.AccountTransactionsSanctions(DestinationSortCode, DestinationAccountNumber, CorrelationId);
+    public string StreamName() => StreamNames.Payments.AccountPayments(PaymentDirection.Inbound, DestinationSortCode, DestinationAccountNumber, PaymentId);
     public int Version() => 1;
     public OneOf<True, List<string>> IsValid() => new True();
 }

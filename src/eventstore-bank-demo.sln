@@ -17,7 +17,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanctionsApi", "SanctionsAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentSchemeDomain", "PaymentSchemeDomain\PaymentSchemeDomain.csproj", "{83F239A0-F91A-4C0E-89AB-D20028C78700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentReadModel", "PaymentReadModel\PaymentReadModel.csproj", "{B5A3A82C-18AE-4AB2-9930-257D632E922B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentReadModel", "PaymentReadModel\PaymentReadModel.csproj", "{B5A3A82C-18AE-4AB2-9930-257D632E922B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D06A47A-63F6-4E99-AE5E-386207BF5B20}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

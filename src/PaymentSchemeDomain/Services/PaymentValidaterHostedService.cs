@@ -29,7 +29,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
         _eventDeserialiser = eventDeserialiser;
         _eventPublisher = eventPublisher;
 
-        _streamName = StreamNames.PaymentProcessing.AllInboundPaymentReceived;
+        _streamName = StreamNames.Payments.AllInboundPaymentReceived;
         _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-received";
     }
@@ -49,7 +49,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(PersistentSubscription _, InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
     {
         // simulate some work and publish the next event...
         await Task.Delay(new Random().Next(200, 600));
@@ -58,6 +58,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
 
         var nextEvent = new InboundPaymentValidated_v1
         {
+            PaymentId = eventData.PaymentId,
             CorrelationId = eventData.CorrelationId,
             DestinationSortCode = eventData.DestinationSortCode,
             DestinationAccountNumber = eventData.DestinationAccountNumber
