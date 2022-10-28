@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Accounts;
 using EventStore.Client;
 using Infrastructure.EventStore;
+using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Logging;
 
 namespace payment_scheme_domain.Services;
@@ -14,6 +14,7 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
 {
     private readonly ILogger<AccountDetailsReadModel> _logger;
     private readonly IEventStreamReader _eventStreamReader;
+    private readonly IEventDeserialiser _eventDeserialiser;
     private string _subscriptionFriendlyName;
         
     public int SortCode { get; private set; }
@@ -22,10 +23,11 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
     public AccountStatus Status { get; private set; }
     public DateTime Opened { get; private set; }
 
-    public AccountDetailsReadModel(ILogger<AccountDetailsReadModel> logger, IEventStreamReader eventStreamReader)
+    public AccountDetailsReadModel(ILogger<AccountDetailsReadModel> logger, IEventStreamReader eventStreamReader, IEventDeserialiser eventDeserialiser)
     {
         _logger = logger;
         _eventStreamReader = eventStreamReader;
+        _eventDeserialiser = eventDeserialiser;
     }
 
     public async Task Read(int sortCode, int accountNumber, CancellationToken cancellationToken)
@@ -41,20 +43,20 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
         foreach (var eventWrapper in events)
         {
             _logger.LogDebug($"event read from stream #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionFriendlyName}");
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            };
-            _ = eventWrapper.EventTypeName switch // ToDo swop switch for dynamic
+                dynamic dynamicEvent = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+                HandleEvent(dynamicEvent);
+            }
+            catch (Exception e)
             {
-                nameof(AccountOpenedEvent_v1) => HandleEvent(JsonSerializer.Deserialize<AccountOpenedEvent_v1>(eventWrapper.EventJson, options)),
-                nameof(AccountStatusUpdated_v1) => HandleEvent(JsonSerializer.Deserialize<AccountStatusUpdated_v1>(eventWrapper.EventJson, options)),
-                _ => throw new NotImplementedException()
-            };
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 
-    private Task HandleEvent(AccountOpenedEvent_v1? eventData)
+    private Task HandleEvent(AccountOpenedEvent_v1 eventData)
     {
         Name = eventData.Name;
         Status = eventData.Status;
@@ -63,7 +65,7 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
         return Task.CompletedTask;
     }
 
-    private Task HandleEvent(AccountStatusUpdated_v1? eventData)
+    private Task HandleEvent(AccountStatusUpdated_v1 eventData)
     {
         Status = eventData.Status;
 

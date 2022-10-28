@@ -7,6 +7,7 @@ using Domain;
 using Domain.Events.Accounts;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
+using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -34,8 +35,14 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
             (subscription, eventWrapper, ct) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
-                dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                HandleEvent(@event, eventWrapper);
+                try
+                {
+                    dynamic dynamicEvent = _eventDeserialiser.DeserialiseEvent(eventWrapper);
+                    HandleEvent(dynamicEvent, eventWrapper);
+                }
+                catch (RuntimeBinderException e)
+                {
+                }
                 return Task.CompletedTask;
             });
     }

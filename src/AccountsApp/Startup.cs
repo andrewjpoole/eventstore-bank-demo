@@ -14,6 +14,8 @@ using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.StatisticsGatherer;
 using Microsoft.OpenApi.Models;
+using Domain;
+using Infrastructure.EventStore.Serialisation;
 
 namespace accounts_api;
 
@@ -45,12 +47,22 @@ public class Startup
         services.AddSingleton<IStatisticsTaskQueue, StatisticsTaskQueue>();
         services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
         services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());
-        services.AddTransient<ICatchupSubscription, CatchupSubscription>();
+        
         services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
-        services.AddSingleton<IEventPublisher, EventPublisher>();
+        services.AddTransient<IEventPublisher, EventPublisher>();
+        services.AddTransient<ICatchupSubscription, CatchupSubscription>();
+        services.AddTransient<IEventStreamReader, EventStreamReader>();
+
+        services.AddSingleton<IEventDeserialiser, EventDeserialiser>();
+        services.AddSingleton<IDeserialisationTypeMapper>(provider =>
+        {
+            var typeMapper = new DeserialisationTypeMapper();
+            typeMapper.AddTypesFromAssembly(typeof(IEvent).Assembly);
+            return typeMapper;
+        });
+
         services.AddSingleton<IAccountsCatchupHostedService, AccountsCatchupHostedService>();
         services.AddHostedService(sp => (AccountsCatchupHostedService)sp.GetService<IAccountsCatchupHostedService>());
-        //services.AddSingleton<IAccountTransactionsCatchupHostedService, AccountTransactionsCatchupHostedService>();
         services.AddSingleton<IAccountRepository, AccountRepository>();
         services.AddScoped<IEndpointContextAccessor, EndpointContextAccessor>();
     }

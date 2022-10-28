@@ -1,12 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
@@ -15,7 +10,6 @@ using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.OpenApi.Models;
 using PaymentReadModel;
-using sanctions_api.RequestHandlers;
 using sanctions_api.RequestHandlers.AddRemoveName;
 using sanctions_api.RequestHandlers.CheckName;
 using sanctions_api.RequestHandlers.GetCurrentNames;
@@ -87,12 +81,12 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapGroupOfEndpointsForAPath("/sanctions", "Sanctions")
+            endpoints.MapGroupOfEndpointsForAPath("/sanctioned-names", "Sanctioned Names")
                 .WithPost<AddSanctionedNameRequest, SanctionedNameChangeResponse>("add")
                 .WithPost<RemoveSanctionedNameRequest, SanctionedNameChangeResponse>("remove")
                 .WithGet<GetCurrentSanctionedNamesRequest, CurrentSanctionedNamesResponse>("")
                 .WithPost<CheckNameRequest, CheckNameResponse>("check-name")
-                .WithGet<GetHeldPaymentsRequest, GetHeldPaymentsResponse>("/held-payments")
+                .WithGet<GetHeldPaymentsRequest, GetHeldPaymentsResponse>("held-payments")
                 .WithPost<ReleaseHeldPaymentRequest, ReleaseHeldPaymentResponse>("release-held-payment");
         });
     }
