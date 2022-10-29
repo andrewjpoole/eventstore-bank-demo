@@ -69,15 +69,15 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
 
     public async Task HandleEvent(PersistentSubscription _, InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
     {
-        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentValidated_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.CorrelationId, cancellationToken);
+        var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentValidated_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
         var accountDetailsReadModel = await _accountDetailsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, cancellationToken);
 
         // check all possible names ToDo use System.Reactive to kick these off and wait, stop if one returns true.
         var sanctionsChecks = new List<Task<OneOf<False, string>>>
         {
-            _sanctionsApiClient.CheckIfNameIsSanctioned2(accountDetailsReadModel.Name),
-            _sanctionsApiClient.CheckIfNameIsSanctioned2(paymentReadModel.OriginatingAccountName),
-            _sanctionsApiClient.CheckIfNameIsSanctioned2(paymentReadModel.DestinationAccountName)
+            _sanctionsApiClient.CheckIfNameIsSanctioned(accountDetailsReadModel.Name),
+            _sanctionsApiClient.CheckIfNameIsSanctioned(paymentReadModel.OriginatingAccountName),
+            _sanctionsApiClient.CheckIfNameIsSanctioned(paymentReadModel.DestinationAccountName)
         };
         var sanctionCheckResults = await Task.WhenAll(sanctionsChecks);
 

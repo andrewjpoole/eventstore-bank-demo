@@ -38,7 +38,7 @@ public class EventPublisher : IEventPublisher
         _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
 
         var isValid = data.IsValid();
-        if (isValid.IsT0)
+        if (isValid.IsT1)
             throw new InvalidOperationException($"Can't publish an invalid event. Type:{typeof(T).Name}, Errors:{string.Join(",", isValid.AsT1)}");
 
         var (typeNameWithoutVersion, version) = GetNameAndVersion(typeof(T));

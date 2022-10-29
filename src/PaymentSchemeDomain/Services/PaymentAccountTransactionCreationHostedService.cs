@@ -56,10 +56,11 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentAccountStatusChecked_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
             
-        var transactionId = Guid.NewGuid(); // replace this with a call to accounts to create the transaction etc
+        var transactionId = Guid.NewGuid(); // Todo replace this with a call to accounts to create the transaction etc
 
         var nextEvent = new InboundPaymentBalanceUpdated_v1()
         {
+            PaymentId = eventData.PaymentId,
             CorrelationId = eventData.CorrelationId,
             DestinationSortCode = eventData.DestinationSortCode,
             DestinationAccountNumber = eventData.DestinationAccountNumber,

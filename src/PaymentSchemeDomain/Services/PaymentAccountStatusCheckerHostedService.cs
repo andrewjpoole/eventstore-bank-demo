@@ -56,6 +56,7 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
             
         var nextEvent = new InboundPaymentAccountStatusChecked_v1()
         {
+            PaymentId = eventData.PaymentId,
             CorrelationId = eventData.CorrelationId,
             DestinationSortCode = eventData.DestinationSortCode,
             DestinationAccountNumber = eventData.DestinationAccountNumber

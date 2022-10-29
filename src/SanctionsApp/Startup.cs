@@ -85,7 +85,8 @@ public class Startup
                 .WithPost<AddSanctionedNameRequest, SanctionedNameChangeResponse>("add")
                 .WithPost<RemoveSanctionedNameRequest, SanctionedNameChangeResponse>("remove")
                 .WithGet<GetCurrentSanctionedNamesRequest, CurrentSanctionedNamesResponse>("")
-                .WithPost<CheckNameRequest, CheckNameResponse>("check-name")
+                .WithPost<CheckNameRequest, CheckNameResponse>("check-name"); 
+            endpoints.MapGroupOfEndpointsForAPath("/sanctioned-payments", "Sanctioned Payments")
                 .WithGet<GetHeldPaymentsRequest, GetHeldPaymentsResponse>("held-payments")
                 .WithPost<ReleaseHeldPaymentRequest, ReleaseHeldPaymentResponse>("release-held-payment");
         });

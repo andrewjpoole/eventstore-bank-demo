@@ -33,7 +33,7 @@ public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPayments
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return _catchupSubscription.StartAsync(StreamNames.Accounts.AllAccounts, "HeldPaymentsCatchupHostedService", cancellationToken,
+        return _catchupSubscription.StartAsync(StreamNames.Payments.AllPayments, "HeldPaymentsCatchupHostedService", cancellationToken,
             (subscription, eventWrapper, ct) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");

@@ -21,7 +21,7 @@ public class SanctionsApiClient : ISanctionsApiClient
         _client.BaseAddress = new Uri(sanctionsUrl);
     }
 
-    public async Task<bool> CheckIfNameIsSanctioned(string name)
+    public async Task<OneOf<False, string>> CheckIfNameIsSanctioned(string name)
     {
         // ToDo add polly retry?
         var body = new
@@ -30,39 +30,17 @@ public class SanctionsApiClient : ISanctionsApiClient
         };
 
         var bodyJson = JsonSerializer.Serialize(body);
-        var response = await _client.PostAsync($"/sanctions/check-name", new StringContent(bodyJson));
+        var response = await _client.PostAsync("/sanctioned-names/check-name", new StringContent(bodyJson));
 
         if (response.IsSuccessStatusCode)
         {
             var responseBodyJson = await response.Content.ReadAsStringAsync();
-            var checkNameResponse = JsonSerializer.Deserialize<CheckNameResponse>(responseBodyJson, new JsonSerializerOptions{ PropertyNameCaseInsensitive = true });
-
-            return checkNameResponse.IsSanctioned;
-        }
-
-        // retries?
-        // throw on error?
-        throw new ApplicationException("Unable to reach the sanctions Api");
-    }
-
-    public async Task<OneOf<False, string>> CheckIfNameIsSanctioned2(string name)
-    {
-        // ToDo add polly retry?
-        var body = new
-        {
-            name
-        };
-
-        var bodyJson = JsonSerializer.Serialize(body);
-        var response = await _client.PostAsync($"/sanctions/check-name", new StringContent(bodyJson));
-
-        if (response.IsSuccessStatusCode)
-        {
-            var responseBodyJson = await response.Content.ReadAsStringAsync();
-            var checkNameResponse = JsonSerializer.Deserialize<CheckNameResponse>(responseBodyJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var checkNameResponse =
+                JsonSerializer.Deserialize<CheckNameResponse>(responseBodyJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) 
+                ?? throw new InvalidOperationException("Unable to deserialise sanctions check names response");
 
             if (checkNameResponse.IsSanctioned)
-                return $"{name} appears in current sanctioned names list.";
+                return $"{checkNameResponse.Name} appears in current sanctioned names list.";
             
             return new False();
         }
