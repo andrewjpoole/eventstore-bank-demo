@@ -15,8 +15,8 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
     private readonly IEventDeserialiser _eventDeserialiser;
 
     //private readonly ICatchupSubscription _catchupSubscription;
-    private string _subscriptionFriendlyName;
-    private CancellationTokenSource _cancellationTokenSource;
+    private string? _subscriptionFriendlyName;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public int SortCode { get; private set; }
     public int AccountNumber { get; private set; }
@@ -25,9 +25,9 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
 
     public int OriginatingSortCode { get; private set; }
     public int OriginatingAccountNumber { get; private set; }
-    public string OriginatingAccountName { get; private set; }
-    public string PaymentReference { get; private set; }
-    public string DestinationAccountName { get; private set; }
+    public string? OriginatingAccountName { get; private set; }
+    public string? PaymentReference { get; private set; }
+    public string? DestinationAccountName { get; private set; }
     public decimal Amount { get; private set; }
     public PaymentScheme Scheme { get; private set; }
     public PaymentType Type { get; private set; }

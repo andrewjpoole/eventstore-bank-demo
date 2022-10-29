@@ -42,8 +42,9 @@ public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPayments
                 {
                     HandleEvent(@event);
                 }
-                catch (RuntimeBinderException e)
+                catch (RuntimeBinderException)
                 {
+                    // Ignore events that we haven't provided a handler for.
                 }
                 return Task.CompletedTask;
 

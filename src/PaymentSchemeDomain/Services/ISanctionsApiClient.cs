@@ -6,5 +6,5 @@ namespace payment_scheme_domain.Services;
 
 public interface ISanctionsApiClient
 {
-    Task<OneOf<False, string>> CheckIfNameIsSanctioned(string name);
+    Task<OneOf<False, string>> CheckIfNameIsSanctioned(string? name);
 }

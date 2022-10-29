@@ -49,10 +49,10 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription subscription, InboundPaymentSanctionsChecked_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(PersistentSubscription _, InboundPaymentSanctionsChecked_v1 eventData, CancellationToken cancellationToken)
     {
         // simulate checking account status
-        await Task.Delay(new Random().Next(200, 600));
+        await Task.Delay(new Random().Next(200, 600), cancellationToken);
             
         var nextEvent = new InboundPaymentAccountStatusChecked_v1()
         {

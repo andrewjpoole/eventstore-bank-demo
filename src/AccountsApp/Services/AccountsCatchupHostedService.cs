@@ -40,8 +40,9 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
                     dynamic dynamicEvent = _eventDeserialiser.DeserialiseEvent(eventWrapper);
                     HandleEvent(dynamicEvent, eventWrapper);
                 }
-                catch (RuntimeBinderException e)
+                catch (RuntimeBinderException)
                 {
+                    // Ignore events that we haven't provided a handler for.
                 }
                 return Task.CompletedTask;
             });

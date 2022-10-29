@@ -10,9 +10,9 @@ public interface IInboundPaymentReadModel
     Guid CorrelationId { get; }
     int OriginatingSortCode { get; }
     int OriginatingAccountNumber { get; }
-    string OriginatingAccountName { get; }
-    string PaymentReference { get; }
-    string DestinationAccountName { get; }
+    string? OriginatingAccountName { get; }
+    string? PaymentReference { get; }
+    string? DestinationAccountName { get; }
     decimal Amount { get; }
     PaymentScheme Scheme { get; }
     PaymentType Type { get; }

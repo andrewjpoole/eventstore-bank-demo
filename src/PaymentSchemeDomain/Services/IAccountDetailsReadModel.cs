@@ -9,7 +9,7 @@ public interface IAccountDetailsReadModel
 {
     public int SortCode { get; }
     public int AccountNumber { get; }
-    public string Name { get; }
+    public string? Name { get; }
     public AccountStatus Status { get; }
     public DateTime Opened { get; }
 

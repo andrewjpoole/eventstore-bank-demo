@@ -52,7 +52,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
     public async Task HandleEvent(PersistentSubscription _, InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
     {
         // simulate some work and publish the next event...
-        await Task.Delay(new Random().Next(200, 600));
+        await Task.Delay(new Random().Next(200, 600), cancellationToken);
 
         // TODO actually validate the payment data ???
 

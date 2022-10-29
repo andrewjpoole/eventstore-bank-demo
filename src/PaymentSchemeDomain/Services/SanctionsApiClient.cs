@@ -10,18 +10,16 @@ namespace payment_scheme_domain.Services;
 
 public class SanctionsApiClient : ISanctionsApiClient
 {
-    private readonly IConfiguration _config;
-    private HttpClient _client;
+    private readonly HttpClient _client;
 
     public SanctionsApiClient(IConfiguration config)
     {
-        _config = config;
         _client = new HttpClient();
         var sanctionsUrl = config["SanctionsApiBaseUrl"];
         _client.BaseAddress = new Uri(sanctionsUrl);
     }
 
-    public async Task<OneOf<False, string>> CheckIfNameIsSanctioned(string name)
+    public async Task<OneOf<False, string>> CheckIfNameIsSanctioned(string? name)
     {
         // ToDo add polly retry?
         var body = new

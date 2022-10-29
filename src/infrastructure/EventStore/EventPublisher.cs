@@ -15,10 +15,8 @@ public class EventPublisher : IEventPublisher
     {
         _eventStoreClientFactory = eventStoreClientFactory;
     }
-
-    private string TypeNameWithoutVersion(string eventTypeName) => eventTypeName.Substring(0, eventTypeName.IndexOf("_", StringComparison.Ordinal));
-
-    private (string TypeNameWithoutVersion, string Version) GetNameAndVersion(Type type)
+    
+    private static (string TypeNameWithoutVersion, string Version) GetNameAndVersion(Type type)
     {
         var fullName = type.Name;
         
@@ -53,7 +51,7 @@ public class EventPublisher : IEventPublisher
             data: JsonSerializer.SerializeToUtf8Bytes(data),
             metadata: JsonSerializer.SerializeToUtf8Bytes(metaData)
         );
-        var result = await client.AppendToStreamAsync(streamName, StreamState.Any, new[] { eventPayload }, cancellationToken: cancellationToken);
+        await client.AppendToStreamAsync(streamName, StreamState.Any, new[] { eventPayload }, cancellationToken: cancellationToken);
 
         return true;
     }

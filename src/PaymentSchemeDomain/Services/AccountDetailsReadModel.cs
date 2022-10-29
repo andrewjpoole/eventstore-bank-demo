@@ -15,11 +15,11 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
     private readonly ILogger<AccountDetailsReadModel> _logger;
     private readonly IEventStreamReader _eventStreamReader;
     private readonly IEventDeserialiser _eventDeserialiser;
-    private string _subscriptionFriendlyName;
+    private string? _subscriptionFriendlyName;
         
     public int SortCode { get; private set; }
     public int AccountNumber { get; private set; }
-    public string Name { get; private set; }
+    public string? Name { get; private set; }
     public AccountStatus Status { get; private set; }
     public DateTime Opened { get; private set; }
 
