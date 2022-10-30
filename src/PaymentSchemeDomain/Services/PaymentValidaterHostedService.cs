@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
-using EventStore.Client;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
@@ -41,15 +41,15 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
             _subscriptionGroupName,
             _subscriptionFriendlyName,
             cancellationToken,
-            (subscription, eventWrapper, retryCount, token) =>
+            (eventWrapper, retryCount, token) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(subscription, @event, token);
+                return HandleEvent(@event, token);
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription _, InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
     {
         // simulate some work and publish the next event...
         await Task.Delay(new Random().Next(200, 600), cancellationToken);

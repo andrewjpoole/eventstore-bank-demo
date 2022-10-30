@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using Domain.Events.Accounts;
-using Infrastructure.EventStore;
+using Domain.Interfaces;
 
 namespace accounts_api.Services;
 

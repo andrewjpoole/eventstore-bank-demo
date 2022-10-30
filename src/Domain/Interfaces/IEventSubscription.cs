@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Domain;
-using Infrastructure.EventStore.Serialisation;
 
-namespace Infrastructure.EventStore;
+namespace Domain.Interfaces;
 
 public interface IEventSubscription<T> where T : IEvent
 {

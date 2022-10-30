@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Microsoft.OpenApi.Models;
 using payment_scheme_simulator.RequestHandlers;

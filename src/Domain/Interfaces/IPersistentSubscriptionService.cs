@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
-using EventStore.Client;
 
-namespace Infrastructure.EventStore;
+namespace Domain.Interfaces;
 
 public interface IPersistentSubscriptionService
 {
@@ -13,7 +11,7 @@ public interface IPersistentSubscriptionService
         string groupName,
         string subscriptionFriendlyName,
         CancellationToken cancellationToken,
-        Func<PersistentSubscription, IEventWrapper, int?, CancellationToken, Task> handleEventAppeared);
+        Func<IEventWrapper, int?, CancellationToken, Task> handleEventAppeared);
 
     void Stop();
 }

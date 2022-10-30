@@ -48,7 +48,7 @@ if accountStatus == blocked or closed or insufficientFunds -> `paymentFailedEven
 ## Event Store / eventsourcing Features to be demonstrated
 
 * immutable events in streams, writing, reading and subscribing
-* builtin Event Store projections
+* builtin Event Store projections (EventType, Category etc)
 * custom js Projections
 * read models - a component which represents an aggregate by maintaining state read from events
 * competing consumers - a server managed subscription, where events are dealt to one or more subscribers via a strategy such as round robin, enables parallel processing a bit like a message bus
@@ -63,11 +63,13 @@ if accountStatus == blocked or closed or insufficientFunds -> `paymentFailedEven
 - [x] define events
 - [x] basic eventstore connection
 - [x] basic payment-scheme-simulator to simulate inbound payment events
-- [ ] payment-scheme-simulator API (different types of payment, select account, invalid payment, payment which will fail etcpayment-)
-- [ ] generic payment scheme domain, with API for initiating payments and event handlers as per above
+- [x] payment-scheme-simulator API (different types of payment, select account, invalid payment, payment which will fail etc)
+- [x] generic payment scheme domain, with event handlers as per above
+- [ ] Outbound payment initiation API
 - [x] sanctions API
-- [x] add initial Accounts API
+- [x] add Accounts API
 - [ ] add transactions/balance to accounts-api, using ReadModels
+- [ ] add Ledger API
 - [ ] setup a jsProjection for OpenAccounts with status?
 - [ ] add a read model (projection) of accounts and statuses data in a scheme
 - [ ] add account time machine

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Events.Payments;
-using Infrastructure.EventStore;
+using Domain.Interfaces;
 using MediatR;
 using payment_scheme_simulator.Services;
 

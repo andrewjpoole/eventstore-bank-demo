@@ -5,7 +5,7 @@ namespace Domain;
 
 public class StreamNames
 {
-    public static string SubscriptionGroupName(string streamName) => $"{streamName}-SubscriptionGroup";
+    public static string SubscriptionGroupName(string streamName) => $"{streamName}-SubscriptionGroup"; // Todo place a number 10,20,30 in this name so the subscriptions are ordered in the eventstore UI?
 
     /* Stream Naming Strategy
      * ======================
@@ -21,10 +21,6 @@ public class StreamNames
 
         public const string AllAccountsOpened = "$et-AccountOpenedEvent";
         public const string AllAccounts = "$ce-Accounts"; // category for stream's starting with 'Account' Category projection will create category streams for everything in the Stream name up to the first '-'
-        
-        //public static string AccountTransactions(int sortCode, int accountNumber, Guid correlationId) => $"Accounts-{sortCode}-{accountNumber}-Transactions-{correlationId}";
-        //public static string AccountTransactionsSanctions(int sortCode, int accountNumber, Guid correlationId) => $"Accounts-TransactionSanctions-{sortCode}-{accountNumber}-Transactions-{correlationId}";
-        //public static string AccountBalanceLedger(int sortCode, int accountNumber) => $"Accounts-{sortCode}-{accountNumber}-BalanceLedger";
     }
     
     public class Payments

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Accounts;
+using Domain.Interfaces;
 using EventStore.Client;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
@@ -37,8 +38,7 @@ public class AccountDetailsReadModel : IAccountDetailsReadModel
 
         _subscriptionFriendlyName = $"AccountDetailsReadModel-{SortCode}-{AccountNumber}";
 
-        var events = await _eventStreamReader.Read(
-            StreamNames.Accounts.AccountDetails(SortCode, AccountNumber), Direction.Forwards, StreamPosition.Start, cancellationToken);
+        var events = await _eventStreamReader.ReadForwards(StreamNames.Accounts.AccountDetails(SortCode, AccountNumber), StreamStartPositions.Default, cancellationToken);
 
         foreach (var eventWrapper in events)
         {

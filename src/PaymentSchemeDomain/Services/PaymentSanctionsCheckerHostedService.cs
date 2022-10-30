@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
-using EventStore.Client;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
@@ -59,15 +59,15 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
             _subscriptionGroupName,
             _subscriptionFriendlyName,
             cancellationToken,
-            (subscription, eventWrapper, retryCount, token) =>
+            (eventWrapper, retryCount, token) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(subscription, @event, token);
+                return HandleEvent(@event, token);
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription _, InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentValidated_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
         var accountDetailsReadModel = await _accountDetailsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, cancellationToken);
@@ -108,6 +108,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
         {
             var nextEvent = new InboundPaymentSanctionsChecked_v1()
             {
+                PaymentId = eventData.PaymentId,
                 CorrelationId = eventData.CorrelationId,
                 DestinationSortCode = eventData.DestinationSortCode,
                 DestinationAccountNumber = eventData.DestinationAccountNumber

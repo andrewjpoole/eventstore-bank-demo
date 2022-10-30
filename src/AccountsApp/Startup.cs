@@ -14,7 +14,7 @@ using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.StatisticsGatherer;
 using Microsoft.OpenApi.Models;
-using Domain;
+using Domain.Interfaces;
 using Infrastructure.EventStore.Serialisation;
 
 namespace accounts_api;

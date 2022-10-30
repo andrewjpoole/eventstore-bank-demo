@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Interfaces;
 using EventStore.Client;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
     private StreamPosition _checkpoint;
     private CancellationToken _cancellationToken;
 
-    private Func<StreamSubscription, IEventWrapper, CancellationToken, Task> _handleEventAppeared;
+    private Func<IEventWrapper, CancellationToken, Task> _handleEventAppeared;
     private string _streamName;
     private string _subscriptionFriendlyName;
     private EventStoreClient _client;
@@ -31,7 +31,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
         string streamName, 
         string subscriptionFriendlyName, 
         CancellationToken cancelationToken, 
-        Func<StreamSubscription, IEventWrapper, CancellationToken, Task> handleEventAppeared)
+        Func<IEventWrapper, CancellationToken, Task> handleEventAppeared)
     {
         _streamName = string.IsNullOrEmpty(streamName) ? throw new ArgumentNullException(nameof(streamName)) : streamName;
         _subscriptionFriendlyName = string.IsNullOrEmpty(subscriptionFriendlyName) ? throw new ArgumentNullException(nameof(subscriptionFriendlyName)) : subscriptionFriendlyName;
@@ -68,7 +68,7 @@ public class CatchupSubscription : ICatchupSubscription, IDisposable
 
         var eventWrapper = new EventWrapper(@event);
         
-        return _handleEventAppeared(subscription, eventWrapper, _cancellationToken);
+        return _handleEventAppeared(eventWrapper, _cancellationToken);
     }
         
     private void SubscriptionDropped(StreamSubscription subscription, SubscriptionDroppedReason reason, Exception ex)

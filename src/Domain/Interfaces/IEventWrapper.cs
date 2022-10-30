@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain;
+namespace Domain.Interfaces;
 
 public interface IEventWrapper
 {

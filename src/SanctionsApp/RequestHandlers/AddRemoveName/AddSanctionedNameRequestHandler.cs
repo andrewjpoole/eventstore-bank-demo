@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Events.Sanctions;
-using Infrastructure.EventStore;
+using Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 

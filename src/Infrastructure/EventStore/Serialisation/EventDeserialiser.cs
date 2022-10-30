@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.Json;
-using Domain;
+using Domain.Interfaces;
 
 namespace Infrastructure.EventStore.Serialisation;
 

@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.Events.Payments;
+using Domain.Interfaces;
 using EventStore.Client;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
@@ -43,7 +44,10 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
     public bool PaymentHasBeenHeld { get; private set; }
 
 
-    public InboundPaymentReadModel(ILogger<InboundPaymentReadModel> logger, IEventStreamReader eventStreamReader, IEventDeserialiser eventDeserialiser) //ICatchupSubscription catchupSubscription)
+    public InboundPaymentReadModel(
+        ILogger<InboundPaymentReadModel> logger, 
+        IEventStreamReader eventStreamReader, 
+        IEventDeserialiser eventDeserialiser) //ICatchupSubscription catchupSubscription)
     {
         _logger = logger;
         _eventStreamReader = eventStreamReader;
@@ -60,9 +64,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
 
         _cancellationTokenSource = new CancellationTokenSource();
 
-        var events = await _eventStreamReader.Read(
-            StreamNames.Payments.AccountPayments(paymentDirection, SortCode, AccountNumber, paymentId), Direction.Forwards,
-            StreamPosition.Start, cancellationToken);
+        var events = await _eventStreamReader.ReadForwards(StreamNames.Payments.AccountPayments(paymentDirection, SortCode, AccountNumber, paymentId), StreamStartPositions.Default, cancellationToken);
 
         foreach (var eventWrapper in events)
         {

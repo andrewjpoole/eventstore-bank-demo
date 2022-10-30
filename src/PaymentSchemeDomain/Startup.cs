@@ -1,6 +1,6 @@
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.Swagger;
-using Domain;
+using Domain.Interfaces;
 using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;

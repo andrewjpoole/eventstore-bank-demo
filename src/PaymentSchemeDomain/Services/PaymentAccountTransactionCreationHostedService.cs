@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
-using EventStore.Client;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
@@ -44,19 +44,19 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             _subscriptionGroupName,
             _subscriptionFriendlyName,
             cancellationToken,
-            (subscription, eventWrapper, retryCount, token) =>
+            (eventWrapper, retryCount, token) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(subscription, @event, token);
+                return HandleEvent(@event, token);
             });
     }
 
-    public async Task HandleEvent(PersistentSubscription _, InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentAccountStatusChecked_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
             
-        var transactionId = Guid.NewGuid(); // Todo replace this with a call to accounts to create the transaction etc
+        var transactionId = Guid.NewGuid(); // Todo start here create a ledger Api client to post an entry...
 
         var nextEvent = new InboundPaymentBalanceUpdated_v1()
         {

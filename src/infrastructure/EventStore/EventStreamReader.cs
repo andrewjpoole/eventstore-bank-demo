@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Interfaces;
 using EventStore.Client;
 using Infrastructure.EventStore.Serialisation;
 
@@ -19,7 +16,13 @@ public class EventStreamReader : IEventStreamReader
         _eventStoreClientFactory = eventStoreClientFactory;
     }
 
-    public async Task<IEnumerable<IEventWrapper>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
+    public async Task<IEnumerable<IEventWrapper>> ReadForwards(string streamName, long startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true) =>
+        await Read(streamName, Direction.Forwards, startPosition == -1 ? StreamPosition.Start : StreamPosition.FromInt64(startPosition), cancelationToken, maxCount, resolveLinkTos);
+
+    public async Task<IEnumerable<IEventWrapper>> ReadBackwards(string streamName, long startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true) =>
+        await Read(streamName, Direction.Backwards, startPosition == -1 ? StreamPosition.End : StreamPosition.FromInt64(startPosition), cancelationToken, maxCount, resolveLinkTos);
+
+    private async Task<IEnumerable<IEventWrapper>> Read(string streamName, Direction direction, StreamPosition startPosition, CancellationToken cancelationToken, int maxCount = 1000, bool resolveLinkTos = true)
     {
         await using var client = _eventStoreClientFactory.CreateClient();
 

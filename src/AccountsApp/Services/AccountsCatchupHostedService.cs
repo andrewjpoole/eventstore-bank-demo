@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using accounts_api.RequestHandlers.Accounts;
 using Domain;
 using Domain.Events.Accounts;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.CSharp.RuntimeBinder;
@@ -32,7 +33,7 @@ public class AccountsCatchupHostedService : BackgroundService, IAccountsCatchupH
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _catchupSubscription.StartAsync(StreamNames.Accounts.AllAccounts, "AccountsCatchupHostedService", cancellationToken,
-            (subscription, eventWrapper, ct) =>
+            (eventWrapper, ct) =>
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
                 try

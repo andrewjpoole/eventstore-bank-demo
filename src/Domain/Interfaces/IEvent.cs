@@ -2,7 +2,7 @@
 using OneOf;
 using OneOf.Types;
 
-namespace Domain;
+namespace Domain.Interfaces;
 
 public interface IEvent
 {

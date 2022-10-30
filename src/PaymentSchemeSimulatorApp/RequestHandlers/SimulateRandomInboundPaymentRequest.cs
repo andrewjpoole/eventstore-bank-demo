@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using AJP.MediatrEndpoints.PropertyAttributes;
+﻿using AJP.MediatrEndpoints.PropertyAttributes;
 using MediatR;
 
 namespace payment_scheme_simulator.RequestHandlers;

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
-using Domain;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.OpenApi.Models;

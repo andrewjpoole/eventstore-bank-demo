@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
+using Domain.Interfaces;
 using EventStore.Client;
 
 namespace Infrastructure.EventStore;
@@ -56,7 +56,7 @@ public class EventPublisher : IEventPublisher
         return true;
     }
 
-    public async Task<bool> Publish<T>(T data, string streamName, StreamRevision streamRevision, CancellationToken cancellationToken) where T : IEvent
+    public async Task<bool> Publish<T>(T data, string streamName, long expectedPosition, CancellationToken cancellationToken) where T : IEvent
     {
         _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
 
@@ -76,6 +76,9 @@ public class EventPublisher : IEventPublisher
             data: JsonSerializer.SerializeToUtf8Bytes(data),
             metadata: JsonSerializer.SerializeToUtf8Bytes(metaData)
         );
+
+        var streamRevision = StreamRevision.FromStreamPosition(StreamPosition.FromInt64(expectedPosition));
+
         await client.AppendToStreamAsync(streamName, streamRevision, new[] { eventPayload }, cancellationToken: cancellationToken);
 
         return true;

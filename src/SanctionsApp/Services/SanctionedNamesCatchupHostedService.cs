@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Sanctions;
+using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
@@ -33,7 +34,7 @@ public class SanctionedNamesCatchupHostedService : BackgroundService, ISanctione
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
         return _catchupSubscription.StartAsync(StreamNames.Sanctions.GlobalSanctionedNames, "SanctionedNamesCatchupHostedService", cancellationToken,
-            (subscription, eventWrapper, ct) =>
+            (eventWrapper, ct) =>
             {
                 _logger.LogInformation($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);

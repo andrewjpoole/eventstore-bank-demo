@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Domain.Interfaces;
 
 namespace Infrastructure.EventStore.Serialisation;
 

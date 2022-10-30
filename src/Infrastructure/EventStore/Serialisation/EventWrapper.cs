@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading;
-using Domain;
+using Domain.Interfaces;
 using EventStore.Client;
 
 namespace Infrastructure.EventStore.Serialisation;
@@ -28,7 +26,7 @@ public class EventWrapper : IEventWrapper
         var metadataJson = Encoding.UTF8.GetString(@event.Metadata.ToArray());
         _metadata = JsonSerializer.Deserialize<JsonElement>(metadataJson);
         
-        Version = _metadata.GetProperty("Version").GetString();
+        Version = _metadata.GetProperty(nameof(Version)).GetString();
 
         Created = @event.Created;
         EventId = @event.EventId.ToGuid();

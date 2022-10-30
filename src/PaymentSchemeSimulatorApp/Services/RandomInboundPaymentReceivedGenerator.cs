@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using accounts_api.RequestHandlers.Accounts;
 using Domain.Events.Payments;
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
