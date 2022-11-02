@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Interfaces;
@@ -26,18 +27,27 @@ public class EventStreamReader : IEventStreamReader
     {
         await using var client = _eventStoreClientFactory.CreateClient();
 
-        var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos:resolveLinkTos);
-
-        var results = new List<EventWrapper>();
-        await foreach (var @event in events)
+        try
         {
-            if (cancelationToken.IsCancellationRequested)
-                return results;
-            
-            var wrapper = new EventWrapper(@event);
-            results.Add(wrapper);
+            var events = client.ReadStreamAsync(direction, streamName, startPosition, maxCount, resolveLinkTos: resolveLinkTos);
+
+            var results = new List<EventWrapper>();
+            await foreach (var @event in events)
+            {
+                if (cancelationToken.IsCancellationRequested)
+                    return results;
+
+                var wrapper = new EventWrapper(@event);
+                results.Add(wrapper);
+            }
+
+            return results;
         }
-            
-        return results;
+        catch (StreamNotFoundException e)
+        {
+            return new List<IEventWrapper>();
+        }
+
+        
     }
 }

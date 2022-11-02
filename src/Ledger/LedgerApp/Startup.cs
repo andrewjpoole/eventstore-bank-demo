@@ -6,6 +6,7 @@ using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using LedgerApp.Services;
 using LedgerDomain.Behaviours;
+using LedgerDomain.Events;
 using LedgerDomain.ReadModel;
 using LedgerDomain.RequestHandlers;
 using Microsoft.OpenApi.Models;
@@ -47,6 +48,7 @@ public class Startup
         {
             var typeMapper = new DeserialisationTypeMapper();
             typeMapper.AddTypesFromAssembly(typeof(IEvent).Assembly);
+            typeMapper.AddTypesFromAssembly(typeof(LedgerEntryPosted_v1).Assembly);
             return typeMapper;
         });
         

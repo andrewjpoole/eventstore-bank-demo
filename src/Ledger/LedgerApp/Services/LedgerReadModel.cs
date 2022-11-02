@@ -17,7 +17,6 @@ public class LedgerReadModel : ILedgerReadModel
 
     public int SortCode { get; private set; }
     public int AccountNumber { get; private set; }
-    public decimal Balance { get; private set; }
 
     public LedgerReadModel(ILogger<LedgerReadModel> logger, IEventDeserialiser eventDeserialiser, IEventStreamReader eventStreamReader)
     {
@@ -35,7 +34,7 @@ public class LedgerReadModel : ILedgerReadModel
         _subscriptionFriendlyName = $"InboundPaymentReadModel-{SortCode}-{AccountNumber}";
 
         // Todo possibly first look up flags/overdraft limit etc from the account?
-        
+
         var events = await _eventStreamReader.ReadForwards(StreamNames.Ledger.AccountLedger(SortCode, AccountNumber), StreamStartPositions.Default, cancellationToken);
 
         foreach (var eventWrapper in events)

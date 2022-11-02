@@ -15,11 +15,11 @@ public class GetBalanceRequestHandler : IRequestHandler<GetBalanceRequest, GetBa
         _ledgerReadModel = ledgerReadModel;
     }
 
-    public Task<GetBalanceResponse> Handle(GetBalanceRequest request, CancellationToken cancellationToken)
+    public async Task<GetBalanceResponse> Handle(GetBalanceRequest request, CancellationToken cancellationToken)
     {
-        _ledgerReadModel.Read(request.SortCode, request.AccountNumber, cancellationToken);
+        await _ledgerReadModel.Read(request.SortCode, request.AccountNumber, cancellationToken);
         var balance = _ledgerReadModel.CurrentBalance();
         _logger.LogInformation($"ledger for {request.SortCode} {request.AccountNumber} read, balance = {balance:C}");
-        return Task.FromResult(new GetBalanceResponse(request.SortCode, request.AccountNumber, balance));
+        return new GetBalanceResponse(request.SortCode, request.AccountNumber, balance);
     }
 }
