@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using payment_scheme_domain.Services;
 using PaymentReadModel;
@@ -74,6 +75,7 @@ public class Startup
 
         services.AddSingleton<IPaymentAccountTransactionCreationHostedService, PaymentAccountTransactionCreationHostedService>();
         services.AddHostedService(sp => sp.GetService<IPaymentAccountTransactionCreationHostedService>() as PaymentAccountTransactionCreationHostedService);
+        
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

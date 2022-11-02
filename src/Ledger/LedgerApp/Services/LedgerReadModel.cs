@@ -1,7 +1,5 @@
 ﻿using Domain;
 using Domain.Interfaces;
-using EventStore.Client;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using LedgerDomain.Events;
 using LedgerDomain.ReadModel;

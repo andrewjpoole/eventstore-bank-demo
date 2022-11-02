@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="AJP.JsonElementExtensions" Version="1.7.0" />
-    <PackageReference Include="AJP.MediatrEndpoints" Version="1.4.0" />
+    <PackageReference Include="AJP.MediatrEndpoints" Version="1.4.1" />
     <PackageReference Include="AJP.MediatrEndpoints.Swagger" Version="1.0.2" />
   </ItemGroup>
 

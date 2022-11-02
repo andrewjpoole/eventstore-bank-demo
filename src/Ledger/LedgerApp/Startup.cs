@@ -10,7 +10,7 @@ using LedgerDomain.ReadModel;
 using LedgerDomain.RequestHandlers;
 using Microsoft.OpenApi.Models;
 
-namespace sanctions_api;
+namespace LedgerApp;
 
 public class Startup
 {
@@ -34,6 +34,8 @@ public class Startup
         services.AddMediatrEndpointsSwagger();
 
         services.AddMediatrEndpoints(typeof(Startup));
+        services.AddMediatrEndpoints(typeof(GetBalanceRequest));
+        services.AddSingleton<IMediatrEndpointsProcessors, MediatrEndpointsProcessors>();
         services.AddLogging();
         services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
         services.AddTransient<IEventPublisher, EventPublisher>();
@@ -87,8 +89,25 @@ public class Startup
              * get global position
              */
             endpoints.MapGroupOfEndpointsForAPath("/ledger", "Ledger")
-                .WithGet<GetBalanceRequest, GetBalanceResponse>("")
-                .WithPost<PostLedgerEntryRequest, PostLedgerEntryResponse>("release-held-payment");
+                .WithGet<GetBalanceRequest, GetBalanceResponse>("balance")
+                .WithPost<PostLedgerEntryRequest, PostLedgerEntryResponse>("");
         });
+    }
+}
+
+public class MediatrEndpointsProcessors : IMediatrEndpointsProcessors
+{
+    public Action<HttpContext, ILogger> PreProcess { get; set; }
+    public Action<HttpContext, TimeSpan, ILogger> PostProcess { get; set; }
+    public Action<Exception, HttpContext, ILogger> ErrorProcess { get; set; }
+
+    public MediatrEndpointsProcessors()
+    {
+        PreProcess = (context, logger) => { };
+        PostProcess = (context, span, arg3) => { };
+        ErrorProcess = (exception, context, arg3) =>
+        {
+            // log error
+        };
     }
 }

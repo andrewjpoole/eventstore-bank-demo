@@ -1,4 +1,4 @@
-namespace sanctions_api;
+namespace LedgerApp;
 
 public class Program
 {

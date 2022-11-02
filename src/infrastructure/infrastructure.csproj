@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AJP.JsonElementExtensions" Version="1.7.0" />
-    <PackageReference Include="AJP.MediatrEndpoints" Version="1.4.0" />
+    <PackageReference Include="AJP.MediatrEndpoints" Version="1.4.1" />
     <PackageReference Include="EventStore.Client.Grpc.PersistentSubscriptions" Version="22.0.0" />
     <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="22.0.0" />
     <PackageReference Include="EventStore.Client.Grpc.Streams" Version="22.0.0" />

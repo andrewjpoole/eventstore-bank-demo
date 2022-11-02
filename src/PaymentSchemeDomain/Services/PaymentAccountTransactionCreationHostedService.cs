@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
@@ -6,8 +8,11 @@ using Domain.Events.Payments;
 using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OneOf;
+using OneOf.Types;
 using PaymentReadModel;
 
 namespace payment_scheme_domain.Services;
