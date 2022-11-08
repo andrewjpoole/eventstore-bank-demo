@@ -77,6 +77,12 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
             }
             catch (Exception e)
             {
+                if (e.GetType() == typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException))
+                {
+                    Console.WriteLine($"Missing handler for {eventWrapper.EventTypeName}, consider adding one if this event's properties are important to this particular aggregate.");
+                    return;
+                }
+
                 Console.WriteLine(e);
                 throw;
             }

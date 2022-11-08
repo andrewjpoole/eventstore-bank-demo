@@ -5,6 +5,7 @@ using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Infrastructure.StatisticsGatherer;
+using LedgerClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -55,6 +56,7 @@ public class Startup
         services.AddSingleton<IAccountDetailsReadModelFactory, AccountDetailsReadModelFactory>();
         services.AddTransient<IInboundPaymentReadModel, InboundPaymentReadModel>();
         services.AddTransient<IAccountDetailsReadModel, AccountDetailsReadModel>();
+        services.AddSingleton<ILedgerApiClient, LedgerApiClient>();
 
         services.AddSingleton<IEventDeserialiser, EventDeserialiser>();
         services.AddSingleton<IDeserialisationTypeMapper>(provider =>
@@ -69,6 +71,9 @@ public class Startup
 
         services.AddSingleton<IPaymentSanctionsCheckerHostedService, PaymentSanctionsCheckerHostedService>();
         services.AddHostedService(sp => sp.GetService<IPaymentSanctionsCheckerHostedService>() as PaymentSanctionsCheckerHostedService);
+        
+        services.AddSingleton<IPaymentReleasedHostedService, PaymentReleasedHostedService>();
+        services.AddHostedService(sp => sp.GetService<IPaymentReleasedHostedService>() as PaymentReleasedHostedService);
 
         services.AddSingleton<IPaymentAccountStatusCheckerHostedService, PaymentAccountStatusCheckerHostedService>();
         services.AddHostedService(sp => sp.GetService<IPaymentAccountStatusCheckerHostedService>() as PaymentAccountStatusCheckerHostedService);

@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
 using Domain.Interfaces;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace payment_scheme_domain.Services;
 
-public class PaymentReleasedHostedService : BackgroundService, IPaymentValidaterHostedService
+public class PaymentReleasedHostedService : BackgroundService, IPaymentReleasedHostedService
 {
     private readonly ILogger<PaymentReleasedHostedService> _logger;
     private readonly IPersistentSubscriptionService _persistentSubscriptionService;
@@ -48,10 +47,8 @@ public class PaymentReleasedHostedService : BackgroundService, IPaymentValidater
             });
     }
 
-    public async Task HandleEvent(InboundPaymentReleased_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundHeldPaymentReleased_v1 eventData, CancellationToken cancellationToken)
     {
-        // TODO actually validate the payment data ???
-
         var nextEvent = new InboundPaymentSanctionsChecked_v1()
         {
             PaymentId = eventData.PaymentId,

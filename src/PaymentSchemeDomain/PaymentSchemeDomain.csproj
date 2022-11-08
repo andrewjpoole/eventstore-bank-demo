@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Ledger\LedgerClient\LedgerClient.csproj" />
     <ProjectReference Include="..\PaymentReadModel\PaymentReadModel.csproj" />
   </ItemGroup>
 

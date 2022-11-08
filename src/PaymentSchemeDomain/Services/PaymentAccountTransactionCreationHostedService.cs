@@ -1,18 +1,13 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
 using Domain.Interfaces;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
-using Microsoft.Extensions.Configuration;
+using LedgerClient;
+using LedgerDomain.RequestHandlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OneOf;
-using OneOf.Types;
 using PaymentReadModel;
 
 namespace payment_scheme_domain.Services;
@@ -24,18 +19,25 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
     private readonly IEventDeserialiser _eventDeserialiser;
     private readonly IEventPublisher _eventPublisher;
     private readonly IInboundPaymentReadModelFactory _inboundPaymentReadModelFactory;
+    private readonly ILedgerApiClient _ledgerApiClient;
 
     private readonly string _streamName;
     private readonly string _subscriptionGroupName;
     private readonly string _subscriptionFriendlyName;
 
-    public PaymentAccountTransactionCreationHostedService(ILogger<PaymentAccountTransactionCreationHostedService> logger, IPersistentSubscriptionService persistentSubscriptionService, IEventDeserialiser eventDeserialiser, IEventPublisher eventPublisher, IInboundPaymentReadModelFactory inboundPaymentReadModelFactory)
+    public PaymentAccountTransactionCreationHostedService(
+        ILogger<PaymentAccountTransactionCreationHostedService> logger, 
+        IPersistentSubscriptionService persistentSubscriptionService, 
+        IEventDeserialiser eventDeserialiser, 
+        IEventPublisher eventPublisher, 
+        IInboundPaymentReadModelFactory inboundPaymentReadModelFactory, ILedgerApiClient ledgerApiClient)
     {
         _logger = logger;
         _persistentSubscriptionService = persistentSubscriptionService;
         _eventDeserialiser = eventDeserialiser;
         _eventPublisher = eventPublisher;
         _inboundPaymentReadModelFactory = inboundPaymentReadModelFactory;
+        _ledgerApiClient = ledgerApiClient;
 
         _streamName = StreamNames.Payments.AllInboundPaymentAccountStatusChecked;
         _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
@@ -60,8 +62,20 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
     public async Task HandleEvent(InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentAccountStatusChecked_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
-            
-        var transactionId = Guid.NewGuid(); // Todo start here create a ledger Api client to post an entry...
+
+        var ledgerPostRequest = new PostLedgerEntryRequest(
+            paymentReadModel.PaymentReference, 
+            paymentReadModel.SortCode, 
+            paymentReadModel.AccountNumber, 
+            paymentReadModel.OriginatingSortCode,
+            paymentReadModel.OriginatingAccountNumber, 
+            paymentReadModel.PaymentId, 
+            paymentReadModel.CorrelationId, 
+            paymentReadModel.Amount);
+
+        var response = await _ledgerApiClient.PostLedgerEntry(ledgerPostRequest); // ToDo fix this - something broke during deserialisation of the request body etc? 
+
+        var transactionId = response.TransactionId;
 
         var nextEvent = new InboundPaymentBalanceUpdated_v1()
         {

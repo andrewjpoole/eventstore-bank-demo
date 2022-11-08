@@ -6,15 +6,16 @@ using OneOf.Types;
 
 namespace Domain.Events.Payments;
 
-public class InboundPaymentReleased_v1 : IEvent
+public class InboundHeldPaymentReleased_v1 : IEvent
 {
     public Guid PaymentId { get; init; }
     public Guid CorrelationId { get; init; }
-    public string Reason { get; init; }
+    public string ReleasedReason { get; init; }
+    public string ReleasedBy { get; init; }
+    public DateTime ReleasedAt { get; init; }
     public int DestinationSortCode { get; init; }
     public int DestinationAccountNumber { get; init; }
-    public static PaymentDirection Direction => PaymentDirection.Inbound;
-    public string StreamName() => StreamNames.Payments.AccountPayments(Direction, DestinationSortCode, DestinationAccountNumber, PaymentId);
+    public string StreamName() => StreamNames.Payments.AccountPayments(PaymentDirection.Inbound, DestinationSortCode, DestinationAccountNumber, PaymentId);
     public int Version() => 1;
     public OneOf<True, List<string>> IsValid() => new True();
 }

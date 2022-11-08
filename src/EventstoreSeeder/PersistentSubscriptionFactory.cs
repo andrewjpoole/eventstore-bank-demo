@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
+using Domain;
 using EventStore.Client;
+using Grpc.Core;
 
 namespace eventstore_seeder;
 
@@ -31,9 +33,27 @@ public class PersistentSubscriptionFactory
         client = new EventStorePersistentSubscriptionsClient(settings);
     }
 
-    public void Create(string streamName, string groupName, PersistentSubscriptionSettings settings = null)
+    public void Create(string streamName, PersistentSubscriptionSettings settings = null)
     {
-        settings ??= new PersistentSubscriptionSettings();
-        client.CreateAsync(streamName, groupName, settings, null, credentials).GetAwaiter().GetResult();
+        try
+        {
+            var groupName = StreamNames.SubscriptionGroupName(streamName);
+
+            settings ??= new PersistentSubscriptionSettings();
+            client.CreateAsync(streamName, groupName, settings, null, credentials).GetAwaiter().GetResult();
+            Console.WriteLine($"Created Persistent Subscription for stream {streamName}");
+        }
+        catch (RpcException e)
+        {
+            if (e.StatusCode == StatusCode.AlreadyExists)
+            {
+                Console.WriteLine($"Persistent Subscription for stream {streamName} already exists");
+                return;
+            }
+
+            Console.WriteLine($"Exception occured while creating Persistent Subscription for stream {streamName} {e}");
+            throw;
+        }
+        
     }
 }

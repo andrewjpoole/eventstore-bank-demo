@@ -12,10 +12,11 @@ public class PersistentSubscriptionsSeeder
             resolveLinkTos: true,
             startFrom: StreamPosition.Start);
             
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentReceived, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentReceived), settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentValidated, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentValidated), settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentSanctionsChecked, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentSanctionsChecked), settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentAccountStatusChecked, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentAccountStatusChecked), settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentBalanceUpdated, StreamNames.SubscriptionGroupName(StreamNames.Payments.AllInboundPaymentBalanceUpdated), settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentReceived, settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentValidated, settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentSanctionsChecked, settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundHeldPaymentReleased, settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentAccountStatusChecked, settings);
+        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentBalanceUpdated, settings);
     }
 }
