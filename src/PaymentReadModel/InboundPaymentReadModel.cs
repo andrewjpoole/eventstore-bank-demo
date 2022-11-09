@@ -102,6 +102,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
     private Task HandleEvent(InboundPaymentReceived_v1 eventData)
     {
         PaymentId = eventData.PaymentId;
+        CorrelationId = eventData.CorrelationId;
         OriginatingSortCode = eventData.OriginatingSortCode;
         OriginatingAccountNumber = eventData.OriginatingAccountNumber;
         OriginatingAccountName = eventData.OriginatingAccountName;

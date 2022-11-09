@@ -36,7 +36,11 @@ public class LedgerApiClient : ILedgerApiClient
     public async Task<PostLedgerEntryResponse> PostLedgerEntry(PostLedgerEntryRequest request)
     {
         // ToDo add polly retry?
-        var bodyJson = JsonSerializer.Serialize(request);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        var bodyJson = JsonSerializer.Serialize(request, options);
         var apiResponse = await _client.PostAsync("/ledger", new StringContent(bodyJson));
 
         if (apiResponse.IsSuccessStatusCode)
