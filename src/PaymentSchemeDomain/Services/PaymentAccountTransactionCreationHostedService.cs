@@ -55,13 +55,15 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(@event, token);
+                return HandleEvent(@event, eventWrapper.EventNumber, token);
             });
     }
 
-    public async Task HandleEvent(InboundPaymentAccountStatusChecked_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentAccountStatusChecked_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentAccountStatusChecked_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
+
+        // read last event from the relevant ledger for idempotency check? and to get the next event version?
 
         var ledgerPostRequest = new PostLedgerEntryRequest(
             paymentReadModel.PaymentReference, 
@@ -73,7 +75,7 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             paymentReadModel.CorrelationId, 
             paymentReadModel.Amount);
 
-        var response = await _ledgerApiClient.PostLedgerEntry(ledgerPostRequest); // ToDo fix this - something broke during deserialisation of the request body etc? 
+        var response = await _ledgerApiClient.PostLedgerEntry(ledgerPostRequest); 
 
         var transactionId = response.TransactionId;
 
@@ -87,7 +89,7 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
             ClearedTransactionId = transactionId
         };
             
-        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, CancellationToken.None);
             
     }
 

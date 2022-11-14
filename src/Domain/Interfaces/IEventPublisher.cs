@@ -7,5 +7,5 @@ public interface IEventPublisher
 {
     Task<bool> Publish<T>(T data, string streamName, CancellationToken cancellationToken) where T: IEvent;
 
-    Task<bool> Publish<T>(T data, string streamName, long expectedPosition, CancellationToken cancellationToken) where T : IEvent;
+    Task<bool> Publish<T>(T data, string streamName, ulong expectedRevision, CancellationToken cancellationToken) where T : IEvent;
 }

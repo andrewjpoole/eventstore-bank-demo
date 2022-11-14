@@ -5,17 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Events\Transactions\**" />
     <Compile Remove="Transactions\**" />
+    <EmbeddedResource Remove="Events\Transactions\**" />
     <EmbeddedResource Remove="Transactions\**" />
+    <None Remove="Events\Transactions\**" />
     <None Remove="Transactions\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="OneOf" Version="3.0.223" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events\Transactions\" />
   </ItemGroup>
 
 </Project>

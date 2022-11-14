@@ -43,11 +43,11 @@ public class PaymentReleasedHostedService : BackgroundService, IPaymentReleasedH
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(@event, token);
+                return HandleEvent(@event, eventWrapper.EventNumber, token);
             });
     }
 
-    public async Task HandleEvent(InboundHeldPaymentReleased_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundHeldPaymentReleased_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
         var nextEvent = new InboundPaymentSanctionsChecked_v1()
         {
@@ -57,7 +57,7 @@ public class PaymentReleasedHostedService : BackgroundService, IPaymentReleasedH
             DestinationAccountNumber = eventData.DestinationAccountNumber
         };
 
-        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), cancellationToken);
+        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, cancellationToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

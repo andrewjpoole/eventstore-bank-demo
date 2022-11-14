@@ -12,7 +12,7 @@ public class EventWrapper : IEventWrapper
     public string EventTypeName { get; init; }
     public DateTime Created { get; init; }
     public Guid EventId { get; init; }
-    public long EventNumber { get; init; }
+    public ulong EventNumber { get; init; }
     public string Version { get; init; }
 
     public dynamic Metadata => _metadata;
@@ -30,7 +30,7 @@ public class EventWrapper : IEventWrapper
 
         Created = @event.Created;
         EventId = @event.EventId.ToGuid();
-        EventNumber = @event.EventNumber.ToInt64();
+        EventNumber = @event.EventNumber.ToUInt64();
         
         EventJson = Encoding.UTF8.GetString(@event.Data.ToArray());
         EventTypeName = @event.EventType;

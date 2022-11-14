@@ -63,11 +63,11 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(@event, token);
+                return HandleEvent(@event, eventWrapper.EventNumber, token);
             });
     }
 
-    public async Task HandleEvent(InboundPaymentValidated_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentValidated_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
         var paymentReadModel = await _inboundPaymentReadModelFactory.Create(InboundPaymentValidated_v1.Direction, eventData.DestinationSortCode, eventData.DestinationAccountNumber, eventData.PaymentId, cancellationToken);
         var accountDetailsReadModel = await _accountDetailsReadModelFactory.Create(eventData.DestinationSortCode, eventData.DestinationAccountNumber, cancellationToken);
@@ -102,7 +102,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
                 Scheme = paymentReadModel.Scheme,
                 Type = paymentReadModel.Type
             };
-            await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+            await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, CancellationToken.None);
         }
         else
         {
@@ -113,7 +113,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
                 DestinationSortCode = eventData.DestinationSortCode,
                 DestinationAccountNumber = eventData.DestinationAccountNumber
             };
-            await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+            await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, CancellationToken.None);
         }
     }
 
@@ -124,14 +124,14 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
     }
 }
 
-public interface IAccountsReadModelFactory
-{
-    Task<IAccountsReadModel> Create(int sortCode, int accountNumber);
-}
+//public interface IAccountsReadModelFactory
+//{
+//    Task<IAccountsReadModel> Create(int sortCode, int accountNumber);
+//}
 
-public interface IAccountsReadModel
-{
-    Task ReadAccountDetails(); // read all details events backwards until a snapshot, then read forwards populating state
-    Task ReadTransactions(); // read all transactions events backwards until a snapshot, then read forwards populating state
-    Task<decimal> ReadBalance(); // read all ledger events backwards until a snapshot, then read forwards populating state
-}
+//public interface IAccountsReadModel
+//{
+//    Task ReadAccountDetails(); // read all details events backwards until a snapshot, then read forwards populating state
+//    Task ReadTransactions(); // read all transactions events backwards until a snapshot, then read forwards populating state
+//    Task<decimal> ReadBalance(); // read all ledger events backwards until a snapshot, then read forwards populating state
+//}

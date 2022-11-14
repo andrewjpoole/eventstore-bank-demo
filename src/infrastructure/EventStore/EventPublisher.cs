@@ -56,12 +56,12 @@ public class EventPublisher : IEventPublisher
         return true;
     }
 
-    public async Task<bool> Publish<T>(T data, string streamName, long expectedPosition, CancellationToken cancellationToken) where T : IEvent
+    public async Task<bool> Publish<T>(T data, string streamName, ulong expectedRevision, CancellationToken cancellationToken) where T : IEvent
     {
         _ = data ?? throw new ArgumentNullException(paramName: nameof(data));
 
         var isValid = data.IsValid();
-        if (isValid.IsT0)
+        if (!isValid.IsT0)
             throw new InvalidOperationException($"Can't publish an invalid event. Type:{typeof(T).Name}, Errors:{string.Join(",", isValid.AsT1)}");
 
         var (typeNameWithoutVersion, version) = GetNameAndVersion(typeof(T));
@@ -76,11 +76,11 @@ public class EventPublisher : IEventPublisher
             data: JsonSerializer.SerializeToUtf8Bytes(data),
             metadata: JsonSerializer.SerializeToUtf8Bytes(metaData)
         );
-
-        var streamRevision = StreamRevision.FromStreamPosition(StreamPosition.FromInt64(expectedPosition));
-
-        await client.AppendToStreamAsync(streamName, streamRevision, new[] { eventPayload }, cancellationToken: cancellationToken);
+        
+        await client.AppendToStreamAsync(streamName, expectedRevision, new[] { eventPayload }, cancellationToken: cancellationToken);
 
         return true;
     }
+
+    // Todo add batch overloads for publish methods
 }

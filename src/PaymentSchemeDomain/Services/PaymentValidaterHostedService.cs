@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Domain;
 using Domain.Events.Payments;
 using Domain.Interfaces;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,11 +44,11 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(@event, token);
+                return HandleEvent(@event, eventWrapper.EventNumber, token);
             });
     }
 
-    public async Task HandleEvent(InboundPaymentReceived_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentReceived_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
         // simulate some work and publish the next event...
         await Task.Delay(new Random().Next(200, 600), cancellationToken);
@@ -64,7 +63,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
             DestinationAccountNumber = eventData.DestinationAccountNumber
         };
 
-        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, CancellationToken.None);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

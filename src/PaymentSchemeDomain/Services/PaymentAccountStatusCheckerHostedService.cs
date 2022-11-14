@@ -45,11 +45,11 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
             {
                 _logger.LogTrace($"event appeared #{eventWrapper.EventNumber} {eventWrapper.EventTypeName} on {_subscriptionGroupName} retryCount: {retryCount}");
                 dynamic @event = _eventDeserialiser.DeserialiseEvent(eventWrapper);
-                return HandleEvent(@event, token);
+                return HandleEvent(@event, eventWrapper.EventNumber, token);
             });
     }
 
-    public async Task HandleEvent(InboundPaymentSanctionsChecked_v1 eventData, CancellationToken cancellationToken)
+    public async Task HandleEvent(InboundPaymentSanctionsChecked_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
         
         // simulate checking account status
@@ -63,7 +63,7 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
             DestinationAccountNumber = eventData.DestinationAccountNumber
         };
 
-        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), CancellationToken.None);
+        await _eventPublisher.Publish(nextEvent, nextEvent.StreamName(), eventNumber, CancellationToken.None);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
