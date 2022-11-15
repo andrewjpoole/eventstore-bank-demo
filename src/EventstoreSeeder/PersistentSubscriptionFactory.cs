@@ -4,7 +4,7 @@ using Domain;
 using EventStore.Client;
 using Grpc.Core;
 
-namespace eventstore_seeder;
+namespace EventstoreSeeder;
 
 public class PersistentSubscriptionFactory
 {

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.Events.Sanctions;
 using Infrastructure.EventStore;
 using Microsoft.Extensions.Configuration;
+using SanctionsDomain.Events;
 
-namespace eventstore_seeder;
+namespace EventstoreSeeder;
 
 public class SanctionedNameSeeder
 {

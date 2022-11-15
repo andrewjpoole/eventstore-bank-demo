@@ -4,7 +4,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Domain.Events.Payments;
+using PaymentSchemeDomain.Events;
+
 // ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 

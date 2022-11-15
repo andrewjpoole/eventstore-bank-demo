@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using accounts_api.RequestHandlers.Accounts;
+using AccountsApp.RequestHandlers.Accounts;
 using Microsoft.Extensions.Configuration;
 
 namespace payment_scheme_simulator.Services;

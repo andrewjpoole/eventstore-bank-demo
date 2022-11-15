@@ -1,4 +1,4 @@
-﻿using Domain.Events.Payments;
+﻿using PaymentSchemeDomain.Events;
 
 namespace PaymentReadModel;
 

@@ -11,9 +11,19 @@ public class DeserialisationTypeMapper : IDeserialisationTypeMapper
     
     public void AddTypesFromAssembly(Assembly assembly)
     {
-        _domainTypeLookup = assembly
-            .DefinedTypes.Where(t => t.DeclaringType == null)
+        var newTypes = assembly
+            .DefinedTypes.Where(t => t.DeclaringType == null 
+                                     && !t.Namespace.StartsWith("Microsoft")
+                                     && !t.Namespace.StartsWith("System"))
             .ToDictionary(k => k.Name, v => v);
+
+        foreach (var typeInfo in newTypes)
+        {
+            if (_domainTypeLookup.ContainsKey(typeInfo.Key))
+                throw new NotSupportedException($"Types registered in the DeserialisationTypeMapper must have unique names, a type named {typeInfo.Key} has already been added to the dictionary.");
+
+            _domainTypeLookup.Add(typeInfo.Key, typeInfo.Value);
+        }
     }
 
     public Type GetTypeFromName(string typeName)

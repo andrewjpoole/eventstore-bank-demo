@@ -1,7 +1,7 @@
 ﻿using Domain;
 using EventStore.Client;
 
-namespace eventstore_seeder;
+namespace EventstoreSeeder;
 
 public class PersistentSubscriptionsSeeder
 {
@@ -12,11 +12,11 @@ public class PersistentSubscriptionsSeeder
             resolveLinkTos: true,
             startFrom: StreamPosition.Start);
             
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentReceived, settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentValidated, settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentSanctionsChecked, settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundHeldPaymentReleased, settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentAccountStatusChecked, settings);
-        persistentSubscriptionFactory.Create(StreamNames.Payments.AllInboundPaymentBalanceUpdated, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentReceived, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentValidated, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentSanctionsChecked, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundHeldPaymentReleased, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentAccountStatusChecked, settings);
+        persistentSubscriptionFactory.Create(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentBalanceUpdated, settings);
     }
 }

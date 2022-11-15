@@ -1,10 +1,8 @@
 ﻿using Domain;
-using Domain.Events.Payments;
 using Domain.Interfaces;
-using EventStore.Client;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.Extensions.Logging;
+using PaymentSchemeDomain.Events;
 
 namespace PaymentReadModel;
 
@@ -64,7 +62,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
 
         _cancellationTokenSource = new CancellationTokenSource();
 
-        var events = await _eventStreamReader.ReadForwards(StreamNames.Payments.AccountPayments(paymentDirection, SortCode, AccountNumber, paymentId), StreamStartPositions.Default, cancellationToken);
+        var events = await _eventStreamReader.ReadForwards(PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AccountPayments(paymentDirection, SortCode, AccountNumber, paymentId), StreamStartPositions.Default, cancellationToken);
 
         foreach (var eventWrapper in events)
         {
@@ -90,7 +88,7 @@ public class InboundPaymentReadModel : IInboundPaymentReadModel
 
         _logger.LogDebug($"Completed reading events from stream {_subscriptionFriendlyName}");
 
-        //await _catchupSubscription.StartAsync(StreamNames.Accounts.AccountTransactions(SortCode, AccountNumber, correlationId),
+        //await _catchupSubscription.StartAsync(PaymentSchemeDomainStreamNames.Accounts.AccountTransactions(SortCode, AccountNumber, correlationId),
         //    _subscriptionFriendlyName, _cancellationTokenSource.Token, (subscription, @event, json, cancellationToken) =>
         //    {
         //        _logger.LogInformation($"event appeared #{@event.OriginalEventNumber} {@event.Event.EventType} on {_subscriptionFriendlyName}");

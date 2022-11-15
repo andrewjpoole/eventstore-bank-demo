@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using accounts_api.RequestHandlers.Accounts;
+using AccountsApp.RequestHandlers.Accounts;
 
 namespace payment_scheme_simulator.Services;
 

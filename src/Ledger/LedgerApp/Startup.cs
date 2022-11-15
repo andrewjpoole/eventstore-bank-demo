@@ -24,9 +24,9 @@ public class Startup
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Sanctions Api",
+                Title = "Ledger Api",
                 Version = "v1",
-                Description = "Api for adding, removing, listing and checking sanctioned names, backed by an immutable stream in eventstore"
+                Description = "Api for Ledgers and account balances"
             });
 
             c.DocumentFilter<AddEndpointsDocumentFilter>();

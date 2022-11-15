@@ -1,5 +1,5 @@
 ﻿using System;
-using Domain.Events.Payments;
+using PaymentSchemeDomain.Events;
 
 namespace payment_scheme_simulator.RequestHandlers;
 

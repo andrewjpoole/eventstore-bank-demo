@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Domain.Events.Payments;
 using Domain.Interfaces;
 using MediatR;
 using payment_scheme_simulator.Services;
+using PaymentSchemeDomain.Events;
 
 namespace payment_scheme_simulator.RequestHandlers;
 

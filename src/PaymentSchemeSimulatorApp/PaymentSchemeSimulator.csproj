@@ -19,8 +19,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AccountsApp\AccountsApi.csproj" />
+    <ProjectReference Include="..\Accounts\AccountsApp\AccountsApp.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\PaymentScheme\PaymentSchemeDomain\PaymentSchemeDomain.csproj" />
   </ItemGroup>
 
 </Project>

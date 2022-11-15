@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.Events.Accounts;
+using AccountsDomain.Events;
 using Infrastructure.EventStore;
 using Microsoft.Extensions.Configuration;
 
-namespace eventstore_seeder;
+namespace EventstoreSeeder;
 
 public class OwnedAccountsSeeder
 {
@@ -53,7 +53,7 @@ public class OwnedAccountsSeeder
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                SortCode = 408011,
+                SortCode = random.Next(400000, 419999),
                 AccountNumber = random.Next(10000000, 99999999),
                 Status = AccountStatus.Opened,
                 Opened = DateTime.Now.Date.AddDays(random.Next(-60, 0))

@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.Interfaces;
 using Infrastructure.EventStore.Serialisation;
+using LedgerDomain;
 using LedgerDomain.Events;
 using LedgerDomain.ReadModel;
 
@@ -35,7 +36,7 @@ public class LedgerReadModel : ILedgerReadModel
 
         // Todo possibly first look up flags/overdraft limit etc from the account?
 
-        var events = await _eventStreamReader.ReadForwards(StreamNames.Ledger.AccountLedger(SortCode, AccountNumber), StreamStartPositions.Default, cancellationToken);
+        var events = await _eventStreamReader.ReadForwards(LedgerDomainStreamNames.AccountLedger(SortCode, AccountNumber), StreamStartPositions.Default, cancellationToken);
 
         foreach (var eventWrapper in events)
         {

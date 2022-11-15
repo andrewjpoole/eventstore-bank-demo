@@ -1,5 +1,4 @@
 ﻿using System;
-using Domain.Events.Payments;
 
 namespace Domain;
 
@@ -15,37 +14,37 @@ public class StreamNames
      * SanctionedNames
      */
 
-    public class Accounts
-    {
-        public static string AccountDetails(int sortCode, int accountNumber) => $"Accounts-{sortCode}-{accountNumber}-Details";
+    //public class Accounts
+    //{
+    //    public static string AccountDetails(int sortCode, int accountNumber) => $"Accounts-{sortCode}-{accountNumber}-Details";
 
-        public const string AllAccountsOpened = "$et-AccountOpenedEvent";
-        public const string AllAccounts = "$ce-Accounts"; // category for stream's starting with 'Account' Category projection will create category streams for everything in the Stream name up to the first '-'
-    }
+    //    public const string AllAccountsOpened = "$et-AccountOpenedEvent";
+    //    public const string AllAccounts = "$ce-Accounts"; // category for stream's starting with 'Account' Category projection will create category streams for everything in the Stream name up to the first '-'
+    //}
     
-    public class Payments
-    {
-        public const string AllPayments = "$ce-Payments";
-        public static string AccountPayments(PaymentDirection direction, int sortCode, int accountNumber, Guid paymentId) => $"Payments-{Enum.GetName(direction)}-{sortCode}-{accountNumber}-{paymentId}";
+    //public class Payments
+    //{
+    //    public const string AllPayments = "$ce-Payments";
+    //    public static string AccountPayments(PaymentDirection direction, int sortCode, int accountNumber, Guid paymentId) => $"Payments-{Enum.GetName(direction)}-{sortCode}-{accountNumber}-{paymentId}";
         
-        public const string AllInboundPaymentReceived = "$et-InboundPaymentReceived";
-        public const string AllInboundPaymentValidated = "$et-InboundPaymentValidated";
-        public const string AllInboundPaymentSanctionsChecked = "$et-InboundPaymentSanctionsChecked";
-        public const string AllInboundPaymentAccountStatusChecked = "$et-InboundPaymentAccountStatusChecked";
-        public const string AllInboundPaymentBalanceUpdated = "$et-InboundPaymentBalanceUpdated";
-        public const string AllInboundPaymentHeld = "$et-InboundPaymentHeld";
-        public const string AllInboundHeldPaymentReleased = "$et-InboundHeldPaymentReleased";
-    }
+    //    public const string AllInboundPaymentReceived = "$et-InboundPaymentReceived";
+    //    public const string AllInboundPaymentValidated = "$et-InboundPaymentValidated";
+    //    public const string AllInboundPaymentSanctionsChecked = "$et-InboundPaymentSanctionsChecked";
+    //    public const string AllInboundPaymentAccountStatusChecked = "$et-InboundPaymentAccountStatusChecked";
+    //    public const string AllInboundPaymentBalanceUpdated = "$et-InboundPaymentBalanceUpdated";
+    //    public const string AllInboundPaymentHeld = "$et-InboundPaymentHeld";
+    //    public const string AllInboundHeldPaymentReleased = "$et-InboundHeldPaymentReleased";
+    //}
 
-    public class Ledger
-    {
-        public const string AllLedgerEvents = "$ce-Ledger";
-        public static string AccountLedger(int sortCode, int accountNumber) => $"Ledger-{sortCode}-{accountNumber}";
-    }
+    //public class Ledger
+    //{
+    //    public const string AllLedgerEvents = "$ce-Ledger";
+    //    public static string AccountLedger(int sortCode, int accountNumber) => $"Ledger-{sortCode}-{accountNumber}";
+    //}
 
-    public class Sanctions
-    {
-        public const string GlobalSanctionedNames = "SanctionedNames";
-        public const string AllSanctionedTransactions = "$projections-SanctionedPayments-result";
-    }
+    //public class Sanctions
+    //{
+    //    public const string GlobalSanctionedNames = "SanctionedNames";
+    //    public const string AllSanctionedTransactions = "$projections-SanctionedPayments-result";
+    //}
 }

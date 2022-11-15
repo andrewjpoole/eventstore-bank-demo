@@ -17,4 +17,8 @@
     <PackageReference Include="OneOf" Version="3.0.223" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
+
 </Project>
