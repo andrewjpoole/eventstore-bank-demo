@@ -40,8 +40,7 @@ public class Startup
         });
 
         services.AddMediatrEndpointsSwagger();
-
-        services.AddMediatrEndpoints(typeof(Startup));
+        services.AddMediatrEndpoints(typeof(AccountOpenedEvent_v1));
 
         services.AddLogging();
         services.AddSingleton<IMediatrEndpointsProcessors, RequestProcessors>();
