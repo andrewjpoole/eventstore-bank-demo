@@ -37,7 +37,7 @@ public class PersistentSubscriptionFactory
     {
         try
         {
-            var groupName = StreamNames.SubscriptionGroupName(streamName);
+            var groupName = SharedStreamNames.SubscriptionGroupName(streamName);
 
             settings ??= new PersistentSubscriptionSettings();
             client.CreateAsync(streamName, groupName, settings, null, credentials).GetAwaiter().GetResult();

@@ -29,7 +29,7 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
         _eventPublisher = eventPublisher;
 
         _streamName = PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentReceived;
-        _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
+        _subscriptionGroupName = SharedStreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-received";
     }
 

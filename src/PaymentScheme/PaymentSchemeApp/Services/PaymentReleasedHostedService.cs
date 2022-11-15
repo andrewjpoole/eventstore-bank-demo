@@ -28,7 +28,7 @@ public class PaymentReleasedHostedService : BackgroundService, IPaymentReleasedH
         _eventPublisher = eventPublisher;
 
         _streamName = PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundHeldPaymentReleased;
-        _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
+        _subscriptionGroupName = SharedStreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-released";
     }
 

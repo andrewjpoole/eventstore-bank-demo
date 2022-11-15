@@ -40,7 +40,7 @@ public class PaymentAccountTransactionCreationHostedService : BackgroundService,
         _ledgerApiClient = ledgerApiClient;
 
         _streamName = PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentAccountStatusChecked;
-        _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
+        _subscriptionGroupName = SharedStreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-account-status-checked";
     }
 

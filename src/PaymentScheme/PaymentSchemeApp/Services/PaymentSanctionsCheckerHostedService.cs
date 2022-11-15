@@ -47,7 +47,7 @@ public class PaymentSanctionsCheckerHostedService : BackgroundService, IPaymentS
         _accountDetailsReadModelFactory = accountDetailsReadModelFactory;
 
         _streamName = PaymentSchemeDomain.PaymentSchemeDomainStreamNames.AllInboundPaymentValidated;
-        _subscriptionGroupName = StreamNames.SubscriptionGroupName(_streamName);
+        _subscriptionGroupName = SharedStreamNames.SubscriptionGroupName(_streamName);
         _subscriptionFriendlyName = "Inbound-payment-validated";
     }
 
