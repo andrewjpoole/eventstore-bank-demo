@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using AccountsApp.RequestHandlers.Accounts;
 using AccountsApp.Services;
 using AccountsDomain.Events;
+using AccountsDomain.RequestHandlers.Accounts;
+using AccountsDomain.ServiceInterfaces;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;

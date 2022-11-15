@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AccountsApp.Services;
+﻿using AccountsDomain.ServiceInterfaces;
 using AJP.MediatrEndpoints.Exceptions;
 using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class UpdateAccountStatusRequestHandler : IRequestHandler<UpdateAccountStatusRequest, UpdateAccountStatusResponse>
 {

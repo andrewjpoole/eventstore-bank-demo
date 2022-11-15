@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AccountsApp.RequestHandlers.Accounts;
-using AccountsDomain.Events;
+﻿using AccountsDomain.Events;
+using AccountsDomain.RequestHandlers.Accounts;
 
-namespace AccountsApp.Services;
+namespace AccountsDomain.ServiceInterfaces;
 
 public interface IAccountRepository
 {

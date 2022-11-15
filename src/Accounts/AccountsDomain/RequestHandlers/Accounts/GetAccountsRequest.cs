@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using AccountsDomain.Events;
+﻿using AccountsDomain.Events;
 using AJP.MediatrEndpoints.PropertyAttributes;
 using AJP.MediatrEndpoints.Swagger.Attributes;
 using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 [SwaggerDescription("Method which gets account details")]
 public class GetAccountsRequest : IRequest<IEnumerable<AccountSummary>>

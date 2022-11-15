@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AccountsApp.RequestHandlers.Accounts;
 using AccountsDomain.Events;
+using AccountsDomain.RequestHandlers.Accounts;
+using AccountsDomain.ServiceInterfaces;
 using Domain.Interfaces;
 
 namespace AccountsApp.Services;

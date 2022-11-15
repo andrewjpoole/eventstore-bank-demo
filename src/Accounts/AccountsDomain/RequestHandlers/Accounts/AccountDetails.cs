@@ -1,7 +1,6 @@
-﻿using System;
-using AccountsDomain.Events;
+﻿using AccountsDomain.Events;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class AccountDetails
 {

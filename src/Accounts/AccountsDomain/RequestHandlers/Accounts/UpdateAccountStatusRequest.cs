@@ -2,7 +2,7 @@
 using AJP.MediatrEndpoints.Swagger.Attributes;
 using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class UpdateAccountStatusRequest : IRequest<UpdateAccountStatusResponse>
 {

@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AccountsApp.Services;
+﻿using AccountsDomain.ServiceInterfaces;
 using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class GetAccountsRequestHandler : IRequestHandler<GetAccountsRequest, IEnumerable<AccountSummary>>
 {

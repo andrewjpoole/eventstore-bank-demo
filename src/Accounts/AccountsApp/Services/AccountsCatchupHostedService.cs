@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AccountsApp.RequestHandlers.Accounts;
 using AccountsDomain;
 using AccountsDomain.Events;
+using AccountsDomain.RequestHandlers.Accounts;
+using AccountsDomain.ServiceInterfaces;
 using Domain;
 using Domain.Interfaces;
 using Infrastructure.EventStore.Serialisation;

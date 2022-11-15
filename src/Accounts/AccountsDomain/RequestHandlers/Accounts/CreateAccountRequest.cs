@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class CreateAccountRequest : IRequest<CreateAccountResponse>
 {

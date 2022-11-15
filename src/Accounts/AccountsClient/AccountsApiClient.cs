@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using AccountsApp.RequestHandlers.Accounts;
+﻿using System.Text.Json;
+using AccountsDomain.RequestHandlers.Accounts;
 using Microsoft.Extensions.Configuration;
 
-namespace payment_scheme_simulator.Services;
+namespace AccountsClient;
 
 public class AccountsApiClient : IAccountsApiClient
 {

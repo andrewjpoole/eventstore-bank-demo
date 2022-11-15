@@ -1,4 +1,4 @@
-﻿namespace AccountsApp.Services;
+﻿namespace AccountsDomain.ServiceInterfaces;
 
 public interface IAccountTransactionsCatchupHostedService
 {

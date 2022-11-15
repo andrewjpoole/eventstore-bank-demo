@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AccountsApp.Services;
-using AccountsDomain.Events;
+﻿using AccountsDomain.Events;
+using AccountsDomain.ServiceInterfaces;
 using MediatR;
 
-namespace AccountsApp.RequestHandlers.Accounts;
+namespace AccountsDomain.RequestHandlers.Accounts;
 
 public class CreateAccountRequestHandler : IRequestHandler<CreateAccountRequest, CreateAccountResponse>
 {
