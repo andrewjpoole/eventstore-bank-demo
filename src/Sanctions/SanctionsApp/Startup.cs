@@ -1,24 +1,25 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
 using Domain.Interfaces;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PaymentReadModel;
 using PaymentSchemeDomain.Events;
-using sanctions_api.RequestHandlers.AddRemoveName;
-using sanctions_api.RequestHandlers.CheckName;
-using sanctions_api.RequestHandlers.GetCurrentNames;
-using sanctions_api.RequestHandlers.HeldPayments;
-using sanctions_api.Services;
+using SanctionsApp.Services;
 using SanctionsDomain.Events;
+using SanctionsDomain.RequestHandlers.AddRemoveName;
+using SanctionsDomain.RequestHandlers.CheckName;
+using SanctionsDomain.RequestHandlers.GetCurrentNames;
+using SanctionsDomain.RequestHandlers.HeldPayments;
+using SanctionsDomain.ServiceInterfaces;
 
-namespace sanctions_api;
+namespace SanctionsApp;
 
 public class Startup
 {

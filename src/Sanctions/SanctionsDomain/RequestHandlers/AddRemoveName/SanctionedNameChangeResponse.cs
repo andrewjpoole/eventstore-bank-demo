@@ -1,4 +1,4 @@
-﻿namespace sanctions_api.RequestHandlers.AddRemoveName;
+﻿namespace SanctionsDomain.RequestHandlers.AddRemoveName;
 
 public class SanctionedNameChangeResponse
 {

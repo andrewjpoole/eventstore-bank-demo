@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace sanctions_api.Services;
+﻿namespace SanctionsDomain.ServiceInterfaces;
 
 public interface ISanctionedNamesCatchupHostedService
 {

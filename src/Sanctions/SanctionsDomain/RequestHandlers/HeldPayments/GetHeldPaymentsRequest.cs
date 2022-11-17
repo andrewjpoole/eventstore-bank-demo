@@ -1,7 +1,7 @@
-﻿using MediatR;
-using AJP.MediatrEndpoints.PropertyAttributes;
+﻿using AJP.MediatrEndpoints.PropertyAttributes;
+using MediatR;
 
-namespace sanctions_api.RequestHandlers.HeldPayments;
+namespace SanctionsDomain.RequestHandlers.HeldPayments;
 
 public class GetHeldPaymentsRequest : IRequest<GetHeldPaymentsResponse>
 {

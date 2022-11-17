@@ -1,15 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AJP.MediatrEndpoints.Exceptions;
+﻿using AJP.MediatrEndpoints.Exceptions;
 using Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using PaymentSchemeDomain.Events;
-using sanctions_api.Services;
+using SanctionsDomain.ServiceInterfaces;
 
-namespace sanctions_api.RequestHandlers.HeldPayments;
+namespace SanctionsDomain.RequestHandlers.HeldPayments;
 
 public class ReleaseHeldPaymentRequestHandler : IRequestHandler<ReleaseHeldPaymentRequest, ReleaseHeldPaymentResponse>
 {
@@ -26,7 +21,7 @@ public class ReleaseHeldPaymentRequestHandler : IRequestHandler<ReleaseHeldPayme
     {
         var validationResult = request.IsValid();
         if (validationResult.IsT1)
-            throw new BadHttpRequestException($"Bad Request: {string.Join(", ", validationResult.AsT1)}");
+            throw new CustomHttpResponseException($"Bad Request: {string.Join(", ", validationResult.AsT1)}", responseStatusCode:400);
 
         var heldPayments = _heldPaymentsCatchupHostedService.GetHeldPayments();
         var foundHeldPayment = heldPayments.FirstOrDefault(p =>

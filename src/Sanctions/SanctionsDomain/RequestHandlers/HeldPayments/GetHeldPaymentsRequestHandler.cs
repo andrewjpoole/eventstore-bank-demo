@@ -1,9 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using sanctions_api.Services;
+﻿using MediatR;
+using SanctionsDomain.ServiceInterfaces;
 
-namespace sanctions_api.RequestHandlers.HeldPayments;
+namespace SanctionsDomain.RequestHandlers.HeldPayments;
 
 public class GetHeldPaymentsRequestHandler : IRequestHandler<GetHeldPaymentsRequest, GetHeldPaymentsResponse>
 {

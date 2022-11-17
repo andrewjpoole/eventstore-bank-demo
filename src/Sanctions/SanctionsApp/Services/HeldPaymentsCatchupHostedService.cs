@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain;
 using Domain.Interfaces;
-using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PaymentSchemeDomain.Events;
+using SanctionsDomain.ServiceInterfaces;
 
-namespace sanctions_api.Services;
+namespace SanctionsApp.Services;
 
 public class HeldPaymentsCatchupHostedService : BackgroundService, IHeldPaymentsCatchupHostedService
 {

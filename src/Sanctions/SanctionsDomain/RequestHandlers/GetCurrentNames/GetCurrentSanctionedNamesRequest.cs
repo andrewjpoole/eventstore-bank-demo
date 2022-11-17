@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace sanctions_api.RequestHandlers.GetCurrentNames;
+namespace SanctionsDomain.RequestHandlers.GetCurrentNames;
 
 public class GetCurrentSanctionedNamesRequest : IRequest<CurrentSanctionedNamesResponse>
 {

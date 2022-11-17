@@ -1,12 +1,10 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using OneOf;
 using OneOf.Types;
+using SanctionsDomain.RequestHandlers.CheckName;
 
-namespace PaymentSchemeApp.Services;
+namespace SanctionsClient;
 
 public class SanctionsApiClient : ISanctionsApiClient
 {

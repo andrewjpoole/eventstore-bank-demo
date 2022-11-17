@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace sanctions_api.RequestHandlers.CheckName;
+namespace SanctionsDomain.RequestHandlers.CheckName;
 
 public class CheckNameRequest : IRequest<CheckNameResponse>
 {

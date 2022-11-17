@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MediatR;
+﻿using MediatR;
 using OneOf;
 using OneOf.Types;
 
-namespace sanctions_api.RequestHandlers.HeldPayments;
+namespace SanctionsDomain.RequestHandlers.HeldPayments;
 
 public class ReleaseHeldPaymentRequest : IRequest<ReleaseHeldPaymentResponse>
 {

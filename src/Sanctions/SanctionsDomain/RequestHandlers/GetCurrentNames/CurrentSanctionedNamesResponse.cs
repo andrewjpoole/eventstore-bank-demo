@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace sanctions_api.RequestHandlers.GetCurrentNames;
+﻿namespace SanctionsDomain.RequestHandlers.GetCurrentNames;
 
 public class CurrentSanctionedNamesResponse
 {

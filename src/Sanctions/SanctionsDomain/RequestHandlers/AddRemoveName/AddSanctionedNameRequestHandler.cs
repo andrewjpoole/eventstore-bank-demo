@@ -1,12 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using AJP.MediatrEndpoints.Exceptions;
 using Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using SanctionsDomain.Events;
 
-namespace sanctions_api.RequestHandlers.AddRemoveName;
+namespace SanctionsDomain.RequestHandlers.AddRemoveName;
 
 public class AddSanctionedNameRequestHandler : IRequestHandler<AddSanctionedNameRequest, SanctionedNameChangeResponse>
 {
@@ -20,7 +17,7 @@ public class AddSanctionedNameRequestHandler : IRequestHandler<AddSanctionedName
     public async Task<SanctionedNameChangeResponse> Handle(AddSanctionedNameRequest request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Name))
-            throw new BadHttpRequestException("Name must not be empty string");
+            throw new CustomHttpResponseException("Name must not be empty string", responseStatusCode:400); // ToDo should have to know about response codes etc here
 
         var addSanctionedNameEvent = new SanctionedNameAdded_v1
         {

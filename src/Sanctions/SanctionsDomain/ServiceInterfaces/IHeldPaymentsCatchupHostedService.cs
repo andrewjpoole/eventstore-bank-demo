@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using PaymentSchemeDomain.Events;
+﻿using PaymentSchemeDomain.Events;
 
-namespace sanctions_api.Services;
+namespace SanctionsDomain.ServiceInterfaces;
 
 public interface IHeldPaymentsCatchupHostedService
 {

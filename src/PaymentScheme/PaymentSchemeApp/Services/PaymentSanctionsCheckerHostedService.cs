@@ -11,6 +11,7 @@ using OneOf;
 using OneOf.Types;
 using PaymentReadModel;
 using PaymentSchemeDomain.Events;
+using SanctionsClient;
 
 namespace PaymentSchemeApp.Services;
 

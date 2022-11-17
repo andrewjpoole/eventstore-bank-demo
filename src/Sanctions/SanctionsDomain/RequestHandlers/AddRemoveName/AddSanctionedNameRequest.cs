@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace sanctions_api.RequestHandlers.AddRemoveName;
+namespace SanctionsDomain.RequestHandlers.AddRemoveName;
 
 public class AddSanctionedNameRequest : IRequest<SanctionedNameChangeResponse>
 {

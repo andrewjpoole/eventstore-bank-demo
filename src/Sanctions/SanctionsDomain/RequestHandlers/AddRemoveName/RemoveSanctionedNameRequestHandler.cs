@@ -1,12 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using AJP.MediatrEndpoints.Exceptions;
 using Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using SanctionsDomain.Events;
 
-namespace sanctions_api.RequestHandlers.AddRemoveName;
+namespace SanctionsDomain.RequestHandlers.AddRemoveName;
 
 public class RemoveSanctionedNameRequestHandler : IRequestHandler<RemoveSanctionedNameRequest, SanctionedNameChangeResponse>
 {
@@ -20,7 +17,7 @@ public class RemoveSanctionedNameRequestHandler : IRequestHandler<RemoveSanction
     public async Task<SanctionedNameChangeResponse> Handle(RemoveSanctionedNameRequest request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Name))
-            throw new BadHttpRequestException("Name must not be empty string");
+            throw new CustomHttpResponseException("Name must not be empty string", responseStatusCode:400);
 
         var removeSanctionedNameEvent = new SanctionedNameRemoved_v1()
         {

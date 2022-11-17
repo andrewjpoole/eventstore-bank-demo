@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sanctions_api.RequestHandlers.HeldPayments;
+﻿namespace SanctionsDomain.RequestHandlers.HeldPayments;
 
 public class ReleaseHeldPaymentResponse
 {

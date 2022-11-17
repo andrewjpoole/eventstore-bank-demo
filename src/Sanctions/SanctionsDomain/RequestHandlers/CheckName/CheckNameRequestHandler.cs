@@ -1,10 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using sanctions_api.Services;
+﻿using MediatR;
+using SanctionsDomain.ServiceInterfaces;
 
-namespace sanctions_api.RequestHandlers.CheckName;
+namespace SanctionsDomain.RequestHandlers.CheckName;
 
 public class CheckNameRequestHandler : IRequestHandler<CheckNameRequest, CheckNameResponse>
 {

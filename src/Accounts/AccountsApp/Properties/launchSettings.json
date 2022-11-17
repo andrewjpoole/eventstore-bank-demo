@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AccountsApi": {
+    "AccountsApp": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5002/swagger",

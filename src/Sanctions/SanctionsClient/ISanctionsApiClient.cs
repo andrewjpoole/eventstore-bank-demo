@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using OneOf;
+﻿using OneOf;
 using OneOf.Types;
 
-namespace PaymentSchemeApp.Services;
+namespace SanctionsClient;
 
 public interface ISanctionsApiClient
 {

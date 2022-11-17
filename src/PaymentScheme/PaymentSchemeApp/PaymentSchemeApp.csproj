@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RequestHandlers\**" />
+    <Content Remove="RequestHandlers\**" />
+    <EmbeddedResource Remove="RequestHandlers\**" />
+    <None Remove="RequestHandlers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<PackageReference Include="AJP.JsonElementExtensions" Version="1.7.0" />
 	<PackageReference Include="AJP.MediatrEndpoints" Version="1.4.1" />
 	<PackageReference Include="AJP.MediatrEndpoints.Swagger" Version="1.0.2" />
@@ -21,10 +28,7 @@
     <ProjectReference Include="..\..\infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\..\Ledger\LedgerClient\LedgerClient.csproj" />
     <ProjectReference Include="..\..\PaymentReadModel\PaymentReadModel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RequestHandlers\" />
+    <ProjectReference Include="..\..\Sanctions\SanctionsClient\SanctionsClient.csproj" />
   </ItemGroup>
 
 </Project>

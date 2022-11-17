@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace sanctions_api;
+namespace SanctionsApp;
 
 public class Program
 {

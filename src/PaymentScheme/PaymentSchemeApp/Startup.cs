@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using PaymentReadModel;
 using PaymentSchemeApp.Services;
 using PaymentSchemeDomain.Events;
+using SanctionsClient;
 
 namespace PaymentSchemeApp;
 
