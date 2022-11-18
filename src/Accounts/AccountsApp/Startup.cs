@@ -43,7 +43,7 @@ public class Startup
         services.AddMediatrEndpoints(typeof(AccountOpenedEvent_v1));
 
         services.AddLogging();
-        services.AddSingleton<IMediatrEndpointsProcessors, RequestProcessors>();
+        services.AddSingleton<IMediatrEndpointsProcessors, DefaultRequestProcessors>();
         services.AddSingleton<IStatisticsTaskQueue, StatisticsTaskQueue>();
         services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
         services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());

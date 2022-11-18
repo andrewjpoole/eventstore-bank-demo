@@ -55,13 +55,6 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
 
     private async Task<(string Name, int SortCode, int AccountNumber)> GetRandomOwnedAccountFromList(Random random)
     {
-        //var filePath = @"c:\temp\accounts.json";
-        //if (!File.Exists(filePath))
-        //    throw new FileNotFoundException($"Can't fine {filePath}");
-
-        //var existingAccountsJson = File.ReadAllText(filePath);
-        //var existingAccounts = JsonSerializer.Deserialize<List<AccountSummary>>(existingAccountsJson, new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
-
         var existingAccounts = await _accountsApiClient.GetAccountSummaries();
         var existingAccountList = existingAccounts.ToList();
 
@@ -84,7 +77,7 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
             var randomUser = JsonSerializer.Deserialize<RandomUserResult>(randomUserJson);
             name = $"{randomUser.results.First().name.first} {randomUser.results.First().name.last}";
 
-            return (name, random.Next(100000, 999999), random.Next(10000000, 99999999));
+            return (name, random.SortCode(), random.AccountNumber());
         }
         else
         {
@@ -92,7 +85,13 @@ public class RandomInboundPaymentReceivedGenerator : IRandomInboundPaymentReceiv
         }
     }
 }
- 
+
+public static class RandomExtensions
+{
+    public static int AccountNumber(this Random random) => random.Next(10000000, 99999999);
+    public static int SortCode(this Random random) => random.Next(100000, 999999);
+}
+
 public class Name
 {
     public string title { get; set; }

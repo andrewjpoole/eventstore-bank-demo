@@ -2,8 +2,10 @@ using AJP.MediatrEndpoints;
 using AJP.MediatrEndpoints.EndpointRegistration;
 using AJP.MediatrEndpoints.Swagger;
 using Domain.Interfaces;
+using Infrastructure;
 using Infrastructure.EventStore;
 using Infrastructure.EventStore.Serialisation;
+using Infrastructure.StatisticsGatherer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +44,12 @@ public class Startup
 
         services.AddMediatrEndpointsSwagger();
 
-        services.AddMediatrEndpoints(typeof(Startup));
+        services.AddSingleton<IMediatrEndpointsProcessors, DefaultRequestProcessors>();
+        services.AddSingleton<IStatisticsTaskQueue, StatisticsTaskQueue>();
+        services.AddSingleton<IStatisticsQueuedHostedService, StatisticsQueuedHostedService>();
+        services.AddHostedService(sp => (StatisticsQueuedHostedService)sp.GetService<IStatisticsQueuedHostedService>());
+
+        services.AddMediatrEndpoints(typeof(SanctionsDomain.SanctionsDomainStreamNames));
         services.AddLogging();
         services.AddSingleton<IEventStoreClientFactory, EventStoreClientFactory>();
         services.AddTransient<IEventPublisher, EventPublisher>();
@@ -54,8 +61,8 @@ public class Startup
         {
             var typeMapper = new DeserialisationTypeMapper();
             typeMapper.AddTypesFromAssembly(typeof(IEvent).Assembly);
-            typeMapper.AddTypesFromAssembly(typeof(SanctionedNameAdded_v1).Assembly);
-            typeMapper.AddTypesFromAssembly(typeof(InboundPaymentValidated_v1).Assembly);
+            typeMapper.AddTypesFromAssembly(typeof(SanctionsDomain.SanctionsDomainStreamNames).Assembly);
+            typeMapper.AddTypesFromAssembly(typeof(PaymentSchemeDomain.PaymentSchemeDomainStreamNames).Assembly);
             return typeMapper;
         });
 
@@ -95,5 +102,7 @@ public class Startup
                 .WithGet<GetHeldPaymentsRequest, GetHeldPaymentsResponse>("held-payments")
                 .WithPost<ReleaseHeldPaymentRequest, ReleaseHeldPaymentResponse>("release-held-payment");
         });
+
+        // ToDo provide request processors object and throw error in the error processor?
     }
 }

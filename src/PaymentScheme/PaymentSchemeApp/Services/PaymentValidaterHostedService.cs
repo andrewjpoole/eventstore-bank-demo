@@ -2,8 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Infrastructure.EventStore.Serialisation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PaymentSchemeDomain.Events;
@@ -50,10 +52,12 @@ public class PaymentValidaterHostedService : BackgroundService, IPaymentValidate
 
     public async Task HandleEvent(InboundPaymentReceived_v1 eventData, ulong eventNumber, CancellationToken cancellationToken)
     {
-        // simulate some work and publish the next event...
-        await Task.Delay(new Random().Next(200, 600), cancellationToken);
+        var eventIsValid = eventData.IsValid();
+        if (!eventIsValid.IsT0)
+            throw new PermanentException($"Event failed validation. {string.Join(",", eventIsValid.AsT1)}");
 
-        // TODO actually validate the payment data ???
+        // ToDo Destination account must exist for an inbound payment to be valid
+        // if exists, add the account name to the event ready for screening
 
         var nextEvent = new InboundPaymentValidated_v1
         {

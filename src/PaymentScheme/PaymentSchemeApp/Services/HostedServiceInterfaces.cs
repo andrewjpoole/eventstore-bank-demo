@@ -6,3 +6,4 @@ public interface IPaymentValidaterHostedService { }
 public interface IPaymentAccountTransactionCreationHostedService { }
 public interface IPaymentAccountStatusCheckerHostedService { }
 public interface IPaymentReleasedHostedService { }
+public interface IPaymentValidatedHostedService { }

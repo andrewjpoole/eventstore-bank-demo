@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using OneOf;
 using OneOf.Types;
+using PaymentSchemeDomain.Validation;
 
 namespace PaymentSchemeDomain.Events;
 
@@ -20,16 +21,26 @@ public class InboundPaymentReceived_v1 : IEvent
     public PaymentScheme Scheme { get; init; }
     public PaymentType Type { get; init; }
     public DateTime ProcessingDate { get; init; }
-
-    //public string StreamName() => Type switch
-    //{
-    //    "DirectCredit" => $"Account-{DestinationSortCode}-{DestinationAccountNumber}-Transactions",
-    //    "DirectDebit" => $"Account-{}-{}-Transactions"
-    //};
-
+    
     public Guid CorrelationId { get; init; }
 
-    public OneOf<True, List<string>> IsValid() => new True();
+    public OneOf<True, List<string>> IsValid()
+    {
+        var errors = new List<string>();
+
+        if(PaymentId == Guid.Empty)
+            errors.Add("PaymentId must be a valid Guid");
+        
+        OriginatingSortCode.IsValidUKSortCode().UseError(s => errors.Add(s));
+        DestinationSortCode.IsValidUKSortCode().UseError(s => errors.Add(s));
+        OriginatingAccountNumber.IsValidUKAccountNumber().UseError(s => errors.Add(s));
+        DestinationAccountNumber.IsValidUKAccountNumber().UseError(s => errors.Add(s));
+        OriginatingAccountName.IsValidAccountName().UseError(s => errors.Add(s));
+        DestinationAccountName.IsValidAccountName().UseError(s => errors.Add(s));
+        PaymentReference.IsValidReference().UseError(s => errors.Add(s));
+
+        return errors.Any() ? errors : new True();
+    }
 
     public static PaymentDirection Direction => PaymentDirection.Inbound;
     public string StreamName() => PaymentSchemeDomainStreamNames.AccountPayments(Direction, DestinationSortCode, DestinationAccountNumber, PaymentId);
