@@ -55,8 +55,9 @@ public class PaymentAccountStatusCheckerHostedService : BackgroundService, IPaym
         await Task.Delay(new Random().Next(200, 600), cancellationToken);
 
         // account already exists but must be in the correct state
-        // have funds available for outbound payments
-        // etc
+        // enabled for credits
+        // enabled for the Payment scheme
+        // not be frozen
             
         var nextEvent = new InboundPaymentAccountStatusChecked_v1()
         {
